@@ -1,0 +1,61 @@
+
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="AirController/css/AirController.css">
+    <style>
+        .button {
+            float:left;
+            height:50%;
+            width:50%;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 50vh;
+        }
+        #not_joined_joystick, #joined_joystick {
+            background-color: #8e79ff
+        }
+        #not_joined_button {
+            background-color: #cbff50
+        }
+        #joined_button {
+            background-color: #00ff00
+        }
+        #not_joined_hero, #joined_hero {
+            background-color: #ff6775
+        }
+        #not_joined_number, #joined_number {
+            background-color: #56ffe4
+        }
+    </style>
+</head>
+<body class="">
+    <div id="Loading" air-page="Loading" class="page">
+        <h1>Loading</h1>
+    </div>
+    <div id="NotJoined" air-page="NotJoined" class="page">
+        <div id="not_joined_joystick" air-joystick="joystick" class="button">Joystick</div>
+        <div id="not_joined_button" air-btn="claim" class="button">Claim</div>
+        <div id="not_joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="not_joined_number" air-btn="number:6" class="button">Number Button</div>
+    </div>
+    <div id="Joined" air-page="Joined" class="page">
+        <div id="joined_joystick" air-joystick="joystick" class="button">Joystick</div>
+        <div id="joined_button" air-btn="button" class="button">Button</div>
+        <div id="joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="joined_number" air-btn="number:6" class="button">Number Button</div>
+    </div>
+
+    <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
+    <script src="AirController/js/virtualjoystick.js"></script>
+    <script src="AirController/js/victor.min.js"></script>
+    <script src="AirController/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="AirController/js/hammer.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="AirController/js/AirController.js"></script>
+
+    <script>
+        var controller = new AirController();
+        controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
+    </script>
+</body>
+</html>
