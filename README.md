@@ -396,7 +396,8 @@ controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
 </body>
 </html>
 ```
-This will output this:
+This example will output this:
+
 ![Rendered version of above example](http://i.imgur.com/snqW4YY.png)
 
 
