@@ -66,7 +66,7 @@ public class ExampleAirController : AirController {
 
 ### Variables
 
-```
+```C#
 // TOGETHER: All devices get marked hero.
 // SEPERATE: Only the hero device will be marked hero.
 public enum HEROMODE { TOGETHER, SEPERATE }
