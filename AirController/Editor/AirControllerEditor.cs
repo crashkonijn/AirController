@@ -10,6 +10,10 @@ namespace SwordGC.AirController
     {
         AirController controller;
 
+        private bool showUnclaimedPlayers = true;
+        private bool showDevices = true;
+        private Dictionary<Device, bool> showInput = new Dictionary<Device, bool>();
+
         public override void OnInspectorGUI()
         {
             controller = (AirController)target;
@@ -17,19 +21,35 @@ namespace SwordGC.AirController
             DrawSettings();
             DrawStats();
 
-            foreach (Device d in controller.Devices.Values)
+            if (controller.Players.Count > 0)
             {
-                DrawDevice(d);
+                showUnclaimedPlayers = EditorGUILayout.Foldout(showUnclaimedPlayers, "Unclaimed Players");
+
+                if (showUnclaimedPlayers)
+                {
+                    foreach (Player p in controller.Players.Values)
+                    {
+                        if (p.state != Player.STATE.CLAIMED) DrawPlayer(p);
+                    }
+                }
             }
 
+            showDevices = EditorGUILayout.Foldout(showDevices, "Devices");
+            if (showDevices)
+            {
+                foreach (Device d in controller.Devices.Values)
+                {
+                    DrawDevice(d);
+                }
+            }
 
             EditorUtility.SetDirty(controller);
         }
 
         private void DrawSettings()
         {
-            EditorGUILayout.BeginVertical("Box");
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical("Box");
 
             controller.heroMode = (AirController.HEROMODE)EditorGUILayout.EnumPopup("Hero Mode", controller.heroMode);
 
@@ -46,8 +66,8 @@ namespace SwordGC.AirController
 
         private void DrawStats ()
         {
-            EditorGUILayout.BeginVertical("Box");
             EditorGUILayout.LabelField("Stats", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical("Box");
 
             if (controller.heroMode == AirController.HEROMODE.TOGETHER)
                 EditorGUILayout.LabelField("Hero: ", "" + controller.HasHero, EditorStyles.boldLabel);
@@ -84,16 +104,19 @@ namespace SwordGC.AirController
         private void DrawInput (Device device)
         {
             EditorGUILayout.BeginVertical("Box");
-            EditorGUILayout.LabelField("Input", EditorStyles.boldLabel);
+            SetShowInput(device, EditorGUILayout.Foldout(ShouldShowInput(device), "Input"));
 
-            foreach (string key in device.Input.Axis.Keys)
+            if (ShouldShowInput(device))
             {
-                EditorGUILayout.LabelField(key + ":", "(" + device.Input.Axis[key].x + ", " + device.Input.Axis[key].y + ")");
-            }
+                foreach (string key in device.Input.Axis.Keys)
+                {
+                    EditorGUILayout.LabelField(key + ":", "(" + device.Input.Axis[key].x + ", " + device.Input.Axis[key].y + ")");
+                }
 
-            foreach (string key in device.Input.Keys.Keys)
-            {
-                EditorGUILayout.LabelField(key + ":", device.Input.Keys[key].value.ToString());
+                foreach (string key in device.Input.Keys.Keys)
+                {
+                    EditorGUILayout.LabelField(key + ":", device.Input.Keys[key].value.ToString());
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -104,9 +127,25 @@ namespace SwordGC.AirController
             EditorGUILayout.BeginVertical("Box");
 
             EditorGUILayout.LabelField("Player " + player.PlayerId, EditorStyles.boldLabel);
+
+            if (player.state != Player.STATE.CLAIMED)
             EditorGUILayout.LabelField("state: ", "" + player.state);
 
             EditorGUILayout.EndVertical();
+        }
+
+        private bool ShouldShowInput (Device device)
+        {
+            if (!showInput.ContainsKey(device)) showInput.Add(device, false);
+
+            return showInput[device];
+        }
+
+        private void SetShowInput (Device device, bool value)
+        {
+            if (!showInput.ContainsKey(device)) showInput.Add(device, false);
+
+            showInput[device] = value;
         }
     }
 }
