@@ -19,6 +19,9 @@ namespace SwordGC.AirController
             controller = (AirController)target;
 
             DrawSettings();
+
+            if (!EditorApplication.isPlaying) return;
+
             DrawStats();
 
             if (controller.Players.Count > 0)
