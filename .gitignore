@@ -4,6 +4,11 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/AssetStoreTools*
+/AirConsole/*
+/Plugins/*
+/Resources/*
+/WebGLTemplates/*
+/*.meta
 
 # Visual Studio 2015 cache directory
 /.vs/
@@ -32,3 +37,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+
+!/.gitignore
+
+!/WebGLTemplates/AirConsole/AirController/*

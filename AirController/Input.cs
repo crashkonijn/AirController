@@ -38,9 +38,20 @@ namespace SwordGC.AirController
 
                 string type = j["type"].str;
 
-                if (type == "button")
+                if (type == "tap-button")
                 {
-                    GetKeyObject(key).Pressed(int.Parse(j["value"].str != null ? j["value"].str : "0"));
+                    GetKeyObject(key).OnDown(int.Parse(j["value"].str != null ? j["value"].str : "0"), Key.TYPE.TAP);
+                }
+                else if (type == "hold-button")
+                {
+                    if (j["event"].str == "down")
+                    {
+                        GetKeyObject(key).OnDown(int.Parse(j["value"].str != null ? j["value"].str : "0"), Key.TYPE.HOLD);
+                    }
+                    else
+                    {
+                        GetKeyObject(key).OnUp();
+                    }
                 }
                 else if(type == "vector")
                 {
@@ -139,10 +150,13 @@ namespace SwordGC.AirController
         {
             foreach (Key k in Keys.Values)
             {
-                k.cooldown -= Time.deltaTime;
-
                 k.prevActive = k.active;
-                k.active = false;
+
+                if (k.type == Key.TYPE.TAP)
+                {
+                    k.cooldown -= Time.deltaTime;
+                    k.active = false;
+                }
             }
         }
 
@@ -170,19 +184,33 @@ namespace SwordGC.AirController
 
         public class Key
         {
+            public enum TYPE { TAP, HOLD }
+            public TYPE type;
+
             public bool active = false;
             public bool prevActive = false;
             public int value;
             public float cooldown;
 
-            public void Pressed (int value)
+            public void OnDown (int value, TYPE type)
             {
                 if (cooldown > 0) return;
 
                 active = true;
                 this.value = value;
-                cooldown = BUTTON_COOLDOWN;
+                this.type = type;
+
+                if (type == TYPE.TAP)
+                {
+                    cooldown = BUTTON_COOLDOWN;
+                }
             }
+
+            public void OnUp ()
+            {
+                active = false;
+            }
+
         }
     }
 }

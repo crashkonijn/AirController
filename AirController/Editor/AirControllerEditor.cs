@@ -115,7 +115,14 @@ namespace SwordGC.AirController
 
                 foreach (string key in device.Input.Keys.Keys)
                 {
-                    EditorGUILayout.LabelField(key + ":", device.Input.Keys[key].value.ToString());
+                    if (device.Input.Keys[key].type == Input.Key.TYPE.HOLD)
+                    {
+                        EditorGUILayout.LabelField(key + ":", "Hold (" + device.Input.Keys[key].active + ", " + device.Input.Keys[key].value.ToString() + ")");
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField(key + ":", "Tap (" + device.Input.Keys[key].value.ToString() + ")");
+                    }
                 }
             }
 

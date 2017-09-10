@@ -113,10 +113,15 @@ var Page = function Page(elementId, parent) {
     this.joysticks = {};
 
     this.findButtons = function findButtons() {
-        var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-btn]");
+        var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-tap-btn]");
         for (var i = 0; i < t_buttons.length; i++) {
             console.log(t_buttons[i].id);
-            this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-btn"), t_buttons[i].getAttribute("air-hero"));
+            this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-tap-btn"), 'tap', t_buttons[i].getAttribute("air-hero"));
+        }
+        var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-hold-btn]");
+        for (var i = 0; i < t_buttons.length; i++) {
+            console.log("HOLD BTN" + t_buttons[i].id);
+            this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-hold-btn"), 'hold', t_buttons[i].getAttribute("air-hero"));
         }
     }
 
@@ -207,24 +212,27 @@ var Page = function Page(elementId, parent) {
     }
 
     // a callback for this page
-    this.eventCallback = function eventCallback(elementId, e) {
+    this.eventCallback = function eventCallback(elementId, event) {
         this.input[this.buttons[elementId].key] = {
-            type: "button",
-            value: this.buttons[elementId].value
+            type: this.buttons[elementId].type + "-button",
+            value: this.buttons[elementId].value,
+            event: event
         };
         this.parent.sendData(true);
     }
 }
 
 // button class
-var Button = function Button(page, elementId, key, hero) {
+var Button = function Button(page, elementId, key, type, hero) {
     this.elementId = elementId;
-    this.eventType = "click";
+    this.eventTypeDown = "click";
+    this.eventTypeUp = "click";
     this.page = page;
     this.key = key;
     this.value = 0;
     this.callback = null;
     this.hero = hero;
+    this.type = type;
 
     this.bind = function bind(page) {
         this.page = page;
@@ -238,10 +246,22 @@ var Button = function Button(page, elementId, key, hero) {
     this.register = function register() {
         //console.log("register: " + this.key);
         if (isEventSupported('touchstart')) {
-            this.eventType = "touchstart";
+            if(this.type == "tap"){
+                this.eventTypeDown = "touchstart";
+            }
+            else {
+                this.eventTypeDown = "touchstart";
+                this.eventTypeUp = "touchend";
+            }
         }
         else {
-            this.eventType = "click";
+            if(this.type == "tap"){
+                this.eventTypeDown = "click";
+            }
+            else {
+                this.eventTypeDown = "mousedown";
+                this.eventTypeUp = "mouseup";
+            }
         }
 
         // split value from key
@@ -251,18 +271,32 @@ var Button = function Button(page, elementId, key, hero) {
             this.value = parts[1];
         }
 
-        document.getElementById(this.elementId).addEventListener(this.eventType, this.eventHandler.bind(this), false);
+        document.getElementById(this.elementId).addEventListener(this.eventTypeDown, this.onDownHandler.bind(this), false);
+
+        if(this.type == "hold"){
+            document.getElementById(this.elementId).addEventListener(this.eventTypeUp, this.onUpHandler.bind(this), false);
+        }
     }
 
     this.unregister = function unregister() {
-        document.getElementById(this.elementId).removeEventListener(this.eventType, this.eventHandler.bind(this));
+        document.getElementById(this.elementId).removeEventListener(this.eventTypeDown, this.onDownHandler.bind(this));
+
+        if(this.type == "hold"){
+            document.getElementById(this.elementId).removeEventListener(this.eventTypeUp, this.onUpHandler.bind(this));
+        }
     }
 
-    this.eventHandler = function eventHandler(e) {
-        console.log("hero: "+this.hero);
-        if(this.hero == "true" && controller.enableHero == false){
-            console.log("request hero");
-            controller.sender.airconsole.getPremium();
+    this.onDownHandler = function onDownHandler (e) {
+        this.eventHandler("down");
+    }
+
+    this.onUpHandler = function onUpHandler (e) {
+        this.eventHandler("up");
+    }
+
+    this.eventHandler = function eventHandler(event) {
+        if(this.hero == "true" && AirController.enableHero == false){
+            AirController.sender.airconsole.getPremium();
             return;
         }
 
@@ -275,7 +309,7 @@ var Button = function Button(page, elementId, key, hero) {
         }
 
         // send this event to the page
-        this.page.eventCallback(this.elementId, e);
+        this.page.eventCallback(this.elementId, event);
         // call the callback if there is one
         if (this.callback != null) this.callback();
     }
