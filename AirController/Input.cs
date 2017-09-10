@@ -7,6 +7,8 @@ namespace SwordGC.AirController
 {
     public class Input
     {
+        public static float BUTTON_COOLDOWN = 0.05f;
+
         /// <summary>
         /// Holds all vector inputs
         /// </summary>
@@ -137,6 +139,8 @@ namespace SwordGC.AirController
         {
             foreach (Key k in Keys.Values)
             {
+                k.cooldown -= Time.deltaTime;
+
                 k.prevActive = k.active;
                 k.active = false;
             }
@@ -169,11 +173,15 @@ namespace SwordGC.AirController
             public bool active = false;
             public bool prevActive = false;
             public int value;
+            public float cooldown;
 
             public void Pressed (int value)
             {
+                if (cooldown > 0) return;
+
                 active = true;
                 this.value = value;
+                cooldown = BUTTON_COOLDOWN;
             }
         }
     }
