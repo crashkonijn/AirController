@@ -83,12 +83,6 @@ namespace SwordGC.AirController
         /// </summary>
         public Dictionary<int, Device> Devices { get; protected set; }
 
-        public AirController ()
-        {
-            Players = new Dictionary<int, Player>();
-            Devices = new Dictionary<int, Device>();
-        }
-
         #region UNITY_CALLBACKS
         void OnEnable()
         {
@@ -111,6 +105,9 @@ namespace SwordGC.AirController
 
             DontDestroyOnLoad(gameObject);
 
+            Players = new Dictionary<int, Player>();
+            Devices = new Dictionary<int, Device>();
+
             ResetPlayers();
         }
 
@@ -130,10 +127,18 @@ namespace SwordGC.AirController
         {
             GetDevice(from).Input.Process(data);
 
-            if (joinMode == JOINMODE.CUSTOM && GetDevice(from).Input.GetKeyDown("claim"))
+            if (joinMode == JOINMODE.CUSTOM)
             {
-                ClaimPlayer(from);
-                UpdateDeviceStates();
+                if (GetDevice(from).Input.GetKeyDown("claim"))
+                {
+                    ClaimPlayer(from);
+                    UpdateDeviceStates();
+                }
+                else if (GetDevice(from).Input.GetKeyDown("unclaim"))
+                {
+                    UnClaimPlayer(from);
+                    UpdateDeviceStates();
+                }
             }
         }
 
@@ -240,14 +245,28 @@ namespace SwordGC.AirController
         /// </summary>
         public void ClaimPlayer(int deviceId)
         {
-            // trying to find a player to claim
+            if (DeviceHasPlayer(deviceId)) return;
+
+            // trying to find a fresh player to claim
             for (int i = 0; i < Players.Count; i++)
             {
                 if (Players[i].state == Player.STATE.UNCLAIMED)
                 {
                     Players[i].Claim(deviceId);
 
-                    InternalDebug("Device " + deviceId + " claimed a player");
+                    InternalDebug("Device " + deviceId + " claimed a fresh player");
+                    return;
+                }
+            }
+
+            // trying to claim a used player
+            for (int i = 0; i < Players.Count; i++)
+            {
+                if (Players[i].state == Player.STATE.DISCONNECTED)
+                {
+                    Players[i].Claim(deviceId);
+
+                    InternalDebug("Device " + deviceId + " claimed a used player");
                     return;
                 }
             }
@@ -263,6 +282,17 @@ namespace SwordGC.AirController
             else
             {
                 InternalDebug("Device " + deviceId + " vailed to claim a player");
+            }
+        }
+
+        /// <summary>
+        /// Unclaim a Player from a device
+        /// </summary>
+        public void UnClaimPlayer (int deviceId)
+        {
+            if (GetDevice(deviceId).HasPlayer)
+            {
+                GetDevice(deviceId).Player.UnClaim();
             }
         }
 

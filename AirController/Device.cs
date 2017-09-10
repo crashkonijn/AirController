@@ -10,7 +10,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Cached reference to the controller
         /// </summary>
-        private AirController airController;
+        protected AirController airController;
 
         /// <summary>
         /// Reference to the input of this device
@@ -66,6 +66,14 @@ namespace SwordGC.AirController
             get
             {
                 return AirController.Instance.GetPlayer(PlayerId);
+            }
+        }
+
+        public bool HasPlayer
+        {
+            get
+            {
+                return Player != null;
             }
         }
 
