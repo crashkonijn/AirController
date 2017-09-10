@@ -13,6 +13,11 @@ namespace SwordGC.AirController
         protected AirController airController;
 
         /// <summary>
+        /// Holds all custom data
+        /// </summary>
+        private Dictionary<string, string> customData = new Dictionary<string, string>();
+
+        /// <summary>
         /// Reference to the input of this device
         /// </summary>
         public Input Input { get; protected set; }
@@ -69,6 +74,9 @@ namespace SwordGC.AirController
             }
         }
 
+        /// <summary>
+        /// Returns true if this device has a player object
+        /// </summary>
         public bool HasPlayer
         {
             get
@@ -78,16 +86,21 @@ namespace SwordGC.AirController
         }
 
         /// <summary>
+        /// Holds the cached nickname
+        /// </summary>
+        private string nickname = null;
+
+        /// <summary>
         /// Returns the Nickname of this device
         /// </summary>
-        public string NickName
+        public string Nickname
         {
             get
             {
-                if (AirController.Instance.IsReady)
-                    return AirConsole.instance.GetNickname(DeviceId);
-                else
-                    return "Guest";
+                if (AirController.Instance.IsReady && nickname == null)
+                    nickname = AirConsole.instance.GetNickname(DeviceId);
+
+                return nickname == null ? "Guest" : nickname;
             }
         }
 
@@ -139,7 +152,30 @@ namespace SwordGC.AirController
             j.AddField("class", Classes);
             j.AddField("enablehero", IsHero);
 
+            JSONObject cData = new JSONObject(JSONObject.Type.OBJECT);
+            foreach (KeyValuePair<string, string> cd in customData)
+            {
+                cData.AddField(cd.Key, cd.Value);
+            }
+
+            j.AddField("customdata", cData);
+
             return j;
+        }
+
+        /// <summary>
+        /// Set's custom data that is sent to the controller
+        /// </summary>
+        public void SetData (string key, string data)
+        {
+            if (customData.ContainsKey(key))
+            {
+                customData[key] = data;
+            }
+            else
+            {
+                customData.Add(key, data);
+            }
         }
 
         /// <summary>

@@ -89,7 +89,7 @@ namespace SwordGC.AirController
         private void DrawDevice(Device device)
         {
             EditorGUILayout.BeginVertical("Box");
-            EditorGUILayout.LabelField("" + device.NickName, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("" + device.Nickname, EditorStyles.boldLabel);
 
             EditorGUILayout.LabelField("deviceId: ", "" + device.DeviceId);
             EditorGUILayout.LabelField("view: ", "" + device.View);

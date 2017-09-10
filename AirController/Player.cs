@@ -27,7 +27,7 @@ namespace SwordGC.AirController
         /// </summary>
         public string Nickname
         {
-            get { return Device.NickName; }
+            get { return Device.Nickname; }
         }
 
         /// <summary>
@@ -54,6 +54,14 @@ namespace SwordGC.AirController
         public Device Device
         {
             get { return airController.GetDevice(DeviceId); }
+        }
+
+        /// <summary>
+        /// Return true if this player has a device
+        /// </summary>
+        public bool HasDevice
+        {
+            get { return Device != null; }
         }
 
         /// <summary>

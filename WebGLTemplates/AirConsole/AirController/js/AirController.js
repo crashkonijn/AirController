@@ -10,19 +10,34 @@ var AirController = function AirController() {
     this.enableHero = false;
     this.orientation ;
     this.vibrate;
+    this.customData = {};
+
+    this.onData = function (customData) {};
+    this.onShowPage = function (newPage) {};
+    this.onBecameHero = function () {};
 
     // call this to start running the controller
     this.init = function init(startPage, orientation, vibrate) {
         this.orientation = orientation;
         this.vibrate = vibrate;
 
+        // init airconsole
+        this.sender = new Sender();
+        this.sender.init(this.orientation);
+
+        this.sender.airconsole.onReady = function (code) {
+            var t_buttons = document.querySelectorAll("[air-profile-picture]");
+            for (var i = 0; i < t_buttons.length; i++) {
+                var img = this.getProfilePicture(this.getDeviceId(), 512);
+                console.log("found image for " + t_buttons[i].id + ": " + img);
+                document.getElementById(t_buttons[i].id).style.backgroundImage = "url('" + img +"')";
+            }
+        }
+
         // find all the pages
         this.findPages();
         // show the first pages
         this.showPage(startPage);
-        // init airconsole
-        this.sender = new Sender();
-        this.sender.init(this.orientation);
     }
 
     this.findPages = function findPages() {
@@ -30,6 +45,19 @@ var AirController = function AirController() {
         for (var i = 0; i < t_pages.length; i++) {
             this.addPage(t_pages[i].id);
         }
+    }
+
+    this.findProfilePictures = function findProfilePictures() {
+        var t_buttons = document.querySelectorAll("[air-profile-picture]");
+        for (var i = 0; i < t_buttons.length; i++) {
+            this.addProfilePicture(t_buttons[i].id);
+        }
+    }
+
+    this.addProfilePicture = function addProfilePicture (elementId){
+        var img = parent.sender.airconsole.getProfilePicture(parent.sender.airconsole.getDeviceId(), 512);
+        console.log("found image for " + elementId + ": " + img);
+        document.getElementById(elementId).style.backgroundImage = "url('" + img +"')";
     }
 
     this.sendData = function sendData (button) {
@@ -80,7 +108,6 @@ var AirController = function AirController() {
 
     // call this to show a certain page
     this.showPage = function showPage(elementId) {
-        //("showpage: " + elementId);
         // unregister old page
         if (this.currentPage != null) {
             if(elementId == this.currentPage.elementId) return;
@@ -95,6 +122,8 @@ var AirController = function AirController() {
         }
 
         this.pages[elementId].show();
+
+        this.onShowPage(this.pages[elementId]);
     }
 
 
@@ -118,11 +147,14 @@ var Page = function Page(elementId, parent) {
             console.log(t_buttons[i].id);
             this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-tap-btn"), 'tap', t_buttons[i].getAttribute("air-hero"));
         }
+
         var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-hold-btn]");
         for (var i = 0; i < t_buttons.length; i++) {
             console.log("HOLD BTN" + t_buttons[i].id);
             this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-hold-btn"), 'hold', t_buttons[i].getAttribute("air-hero"));
         }
+
+
     }
 
     // registers a button to this page
@@ -311,7 +343,7 @@ var Button = function Button(page, elementId, key, type, hero) {
         // send this event to the page
         this.page.eventCallback(this.elementId, event);
         // call the callback if there is one
-        if (this.callback != null) this.callback();
+        if (this.callback != null) this.callback(event);
     }
 }
 
@@ -414,10 +446,17 @@ var Sender = function Sender() {
                     var obj = JSON.parse(data.custom);
                     //console.log(this.device_id);
                     if(obj[this.device_id]){
-                        controller.enableHero = obj[this.device_id].enablehero;
-                        controller.showPage(obj[this.device_id].view)
+                        if(!controller.enableHero && obj[this.device_id].enablehero){
+                            controller.enableHero = true;
+                            controller.onBecameHero();
+                        }
+
+                        controller.showPage(obj[this.device_id].view);
+
+                        controller.customData = obj[this.device_id].customdata;
+                        controller.onData(obj[this.device_id].customdata);
+
                         document.body.className = "P" + (obj[this.device_id].playerId + 1) + " " + obj[this.device_id].class + " " + obj[this.device_id].color;
-                        //console.log("whoop whoop");
                     }
                 }
                 catch(e) {
@@ -444,6 +483,8 @@ var Sender = function Sender() {
             }
         })(this), 1 / 60 * 1000);
     }
+
+
 
     this.run = function run () {
         var curTimestamp = Date.now();
@@ -539,3 +580,5 @@ var isEventSupported = (function(){
     }
     return isEventSupported;
 })();
+
+var controller = new AirController();

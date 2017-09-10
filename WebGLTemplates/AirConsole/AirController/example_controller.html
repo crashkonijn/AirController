@@ -27,6 +27,9 @@
         #not_joined_number, #joined_number {
             background-color: #56ffe4
         }
+        #joined_profile {
+            background: url("http://via.placeholder.com/512x512") no-repeat center center;
+        }
     </style>
 </head>
 <body class="">
@@ -35,15 +38,15 @@
     </div>
     <div id="NotJoined" air-page="NotJoined" class="page">
         <div id="not_joined_joystick" air-joystick="joystick" class="button">Joystick</div>
-        <div id="not_joined_button" air-btn="claim" class="button">Claim</div>
-        <div id="not_joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
-        <div id="not_joined_number" air-btn="number:6" class="button">Number Button</div>
+        <div id="not_joined_button" air-hold-btn="claim" class="button">Claim</div>
+        <div id="not_joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="not_joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
     <div id="Joined" air-page="Joined" class="page">
-        <div id="joined_joystick" air-joystick="joystick" class="button">Joystick</div>
-        <div id="joined_button" air-btn="button" class="button">Button</div>
-        <div id="joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
-        <div id="joined_number" air-btn="number:6" class="button">Number Button</div>
+        <div id="joined_profile" air-profile-picture class="button"></div>
+        <div id="joined_button" air-tap-btn="button" class="button">Button</div>
+        <div id="joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
 
     <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
@@ -54,8 +57,11 @@
     <script type="text/javascript" src="AirController/js/AirController.js"></script>
 
     <script>
-        var controller = new AirController();
-        controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
+        controller.init("Joined", AirConsole.ORIENTATION_LANDSCAPE, true);
+
+        controller.onData = function (customData) { console.log("onData: "); console.log(customData); };
+        controller.onShowPage = function (newPage) { console.log("onShowPage "); console.log(newPage); };
+        controller.onBecameHero = function () {};
     </script>
 </body>
 </html>
