@@ -99,6 +99,11 @@ namespace SwordGC.AirController
             return GetKeyObject(key).active && !GetKeyObject(key).prevActive;
         }
 
+        public bool GetKeyUp (string key)
+        {
+            return GetKeyObject(key).type == Key.TYPE.HOLD ? !GetKeyObject(key).active && GetKeyObject(key).prevActive : false;
+        }
+
         /// <summary>
         /// Returns the axis of an object
         /// 

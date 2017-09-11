@@ -20,6 +20,7 @@ Controller:
 * Smart sending of input, to minimize player input delay.
 * HTML classes can be assigned by the Unity script, which then gets put in the body tag for easy CSS adjustments. (Think colors, enabling/disabling of things).
 * Supports vibration on button press.
+* Easy profile picture loading
 
 Unity:
 * Auto handles the joining of devices.
@@ -28,6 +29,7 @@ Unity:
 * The state of the controller is controlled by the device class in unity and thus allows for easy adjustment from in game. Show a different screen when a user is gameover? Easy, just change one value!
 * AirController handles all the input sent by the controller. All you have to do is Player.Input.GetKeyDown("jump");
 * Custom editor to keep track of what's going on.
+* Auto profile picture loading
 
 ---
 
@@ -121,7 +123,10 @@ public Player GetPlayer(int playerId) {}
 public void ResetPlayers() {}
 
 // Claims a player for a device
-public void ClaimPlayer(int playerId) {}
+public void ClaimPlayer(int deviceId) {}
+
+// Unclaim a player from a device
+public void UnclaimPlayer(int deviceId) {}
 
 // Tries to reconnect a device to a previously claimed player
 public bool ReconnectWithPlayer (int deviceId) {}
@@ -172,6 +177,9 @@ public int DeviceId { get; private set; }
 
 // Returns the device of this player
 public Device Device;
+
+// True if this player has a device
+public bool HasDevice;
 
 // Returns the input of this player
 public Input Input;
@@ -245,8 +253,11 @@ public int PlayerId;
 // Returns the connected player
 public Player Player;
 
+// True if this device has a player object
+public bool HasPlayer;
+
 // Returns the Nickname of this device
-public string NickName;
+public string Nickname;
 
 // Should return the current view of the controller
 public virtual string View;
@@ -258,23 +269,33 @@ public virtual string Classes;
 public Texture2D ProfilePicture { get; private set; }
 ```
 
+### Functions
+```C#
+// Set's custom data that is sent to the controller
+public void SetData (string key, string data) {}
+```
+
 ## Input
 
 ### Functions
 ```C#
 // Returns true if the button was pressed this frame
-public bool GetKey (string key);
+public bool GetKey (string key) {}
 
 // Retuyrns true if the button was pressed down this frame
-public bool GetKeyDown (string key);
+public bool GetKeyDown (string key) {}
+
+// True if the button was released this frame.
+// Note: Only works for "hold" buttons
+public bool GetKeyUp (string key) {}
 
 // Returns the axis of an object
 // Example: The controller holds a joystick called Movement
 // GetAxis("MovementHorizontal") will return the x value of movement
-public float GetAxis (string key);
+public float GetAxis (string key) {}
 
 // Returns the vector of a given key
-public Vector2 GetVector (string key);
+public Vector2 GetVector (string key) {}
 ```
 
 # AirController (HTML/JS)
@@ -336,10 +357,23 @@ This is all javascript that's needed at the end of your HTML
 
 ```Javascript
 controller.init(page, orientation, vibrate);
-```
-Example:
-```Javascript
+// Example:
 controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
+```
+### Callbacks
+
+The controller has a couple of callbacks to make it easy to implement your own javascript features.
+
+```Javascript
+// Callback whenever data is received, but doesn't necessarily mean custom data was changed.
+// Data is stored as key/value, as provided by Device.SetData(key, value) in Unity.
+controller.onData = function (customData) {};
+
+// Called when a new page is shown, includes the new page object
+controller.onShowPage = function (newPage) {};
+
+// Called when a user becomes a hero, or when any user becomes or is a hero
+controller.onBecameHero = function () {};
 ```
 
 
@@ -407,7 +441,7 @@ controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
 
         controller.onData = function (customData) { console.log("onData: "); console.log(customData); };
         controller.onShowPage = function (newPage) { console.log("onShowPage "); console.log(newPage); };
-        controller.onBecameHero = function () {};
+        controller.onBecameHero = function ( console.log("onBecameHero"); ) {};
     </script>
 </body>
 </html>
