@@ -2,32 +2,32 @@
 
 A plug 'n play unity plugin for [AirConsole](https://www.airconsole.com/) for easier development.
 
-An earlier version of this library was used to handle all AirConsole related things when developing our game [Basher Beatdown for AirConsole](https://www.airconsole.com/play/multiplayer-games/basher-beatdown). This version has been cleaned up and extended upon, to make it usefull to a much wider range of games.
+An earlier version of this library was used to handle all AirConsole related things when developing our game [Basher Beatdown for AirConsole](https://www.airconsole.com/play/multiplayer-games/basher-beatdown). This version has been cleaned up and extended upon, to make it useful to a much wider range of games.
 
 ## Philosophy
 
-With AirConsole you have to work with two seperated systems, with Unity (or another engine) for the game itself and HTML/Javascript for the controllers. When working with two sperated systems that have to work together where both have the power to make decisions it can quickly become a mess. The state of one might not be what the other expexts anymore at any point in time.
+With AirConsole you have to work with two separate systems, with Unity (or another engine) for the game itself and HTML/Javascript for the controllers. When working with two separate systems that have to work together where both have the power to make decisions it can quickly become a mess. The state of one might not be what the other expects anymore at any point in time.
 
-To prevent this from hapening and to keep all logic in the same place the controller doesn't decide anything, but simply acts as a normal input device, nothing else. Ofcourse using a mobile phone as a controller gives the great opportunity of being able to display different screens and buttons, but what needs to be shown when is completely controlled by the Unity plugin.
+To prevent this from happening and to keep all logic in the same place the controller doesn't decide anything, but simply acts as a normal input device, nothing else. Of course using a mobile phone as a controller gives the great opportunity of being able to display different screens and buttons, but what needs to be shown when is completely controlled by the Unity plugin.
 
 ## Features
 
 Controller:
-* Easy HTML setup, no javascript required. The system will smartly manage all sending for you. (By using the air-btn="", air-page="" and air-joystick="" tags)
+* Easy HTML setup, no javascript required. 
 * Out of the box support for buttons, buttons with int values and joysticks
-* Handles different screens, controlled by the Unity part
+* Handles different screens, controlled by the Unity part.
 * Handles hero users, can disable hero only buttons automatically. It will show the become hero screen if a non-hero pushes it.
 * Smart sending of input, to minimize player input delay.
-* HTML classes can be assigned by the Unity script, which then get put in the body tag for easy CSS adjustments. (Think colors, enabling/disabling of things)
-* Supports vibration on button press
+* HTML classes can be assigned by the Unity script, which then gets put in the body tag for easy CSS adjustments. (Think colors, enabling/disabling of things).
+* Supports vibration on button press.
 
 Unity:
 * Auto handles the joining of devices.
 * Auto handles the creation of player objects, which can be assigned to a device.
-* Auto reconnect a device to a player after connection loss.
+* Auto reconnects a device to a player after connection loss.
 * The state of the controller is controlled by the device class in unity and thus allows for easy adjustment from in game. Show a different screen when a user is gameover? Easy, just change one value!
-* AirController handles all the input send by the controller. All you have to do is Player.Input.GetKeyDown("jump");
-* Custom editor to keep track of what's going on
+* AirController handles all the input sent by the controller. All you have to do is Player.Input.GetKeyDown("jump");
+* Custom editor to keep track of what's going on.
 
 ---
 
@@ -35,13 +35,13 @@ Unity:
 
 AirController consists out of four parts, the Aircontroller, Player, Device and Input.
 
-One could argue that players and devices could be the same, but the fact that they are seperated made certain situations easier. When a game start you might request all Player objects and assign them to your own player object to get the input from. If player and device are the same what would happen when a device disconnects? Now a device can disconnect and be auto assigned back to it's player. Your code now doesn't have to worry about anything.
+One could argue that players and devices could be the same, but the fact that they are separated made certain situations easier. When a game starts you might request all Player objects and assign them to your own player object to get the input from. If player and device are the same what would happen when a device disconnects? Now a device can disconnect and be auto assigned back to its player. Your code now doesn't have to worry about anything.
 
-Another example would be our game Basher Beatdown where there's only four players allowed. When the game starts, four players are created, and can then be claimed by a device. In this case you can still receive input from all players (Devices) that joined.
+Another example would be our game Basher Beatdown where there are only four players allowed. When the game starts, four players are created, and can then be claimed by a device. In this case, you can still receive input from all players (Devices) that joined.
 
 ## AirController (Unity)
 
-The AirController is the base class that handles everything, eventhough AirController works out of the box it is adviced that all 3 classes get extended for custom behaviour.
+The AirController is the base class that handles everything, even though AirController works out of the box it is advised that all 3 classes get extended for custom behavior.
 
 ![AirController editor window](http://i.imgur.com/u6ziTRl.png)
 
@@ -281,7 +281,7 @@ public Vector2 GetVector (string key);
 
 ## HTML
 
-The HTML follows a very simple boilerplate to make the controller. The AirController.css will remove all default css off a browser so you start off with a blank slate that will completely fill the screen.
+The HTML follows a very simple boilerplate to make the controller. The AirController.css will remove all default CSS off a browser so you start off with a blank slate that will completely fill the screen.
 
 ### Page
 First off everything has to be put in pages, these pages can be switched by the unity plugin. A page is created like this:
@@ -292,22 +292,23 @@ First off everything has to be put in pages, these pages can be switched by the 
 </div>
 ```
 
-### Button
-By adding the following to an HTML object it will become a button:
+### Button (tap)
+By adding the following to an HTML object it will become a button that sends onTouchStart events:
 ```HTML
-air-btn="name"
+air-tap-btn="name"
+```
+
+### Button (hold)
+By adding the following to an HTML object it will become a button that sends both onTouchStart and onTouchEnd events:
+```HTML
+air-hold-btn="name"
 ```
 
 ### Button with int value
-By adding the following to an HTML object it will become a button with a value:
+The below example shows how to add a value to a button
 ```HTML
-air-btn="name:0"
-```
-
-### Joystick
-By adding the following to an HTML object it will become a joystick:
-```HTML
-air-joystick="name"
+air-tap-btn="name:0"
+air-hold-btn="name:1";
 ```
 
 ### Hero only button
@@ -320,6 +321,15 @@ When the following class is added to an object it's alpha will become 0.5f when 
 class="herodisabled"
 ```
 
+### Joystick
+By adding the following to an HTML object it will become a joystick:
+```HTML
+air-joystick="name"
+```
+
+### Profile picture
+By adding "air-profile-picture" to an HTML element it's CSS background-image value will be set to the profile picture 
+
 ## Javascript
 
 This is all javascript that's needed at the end of your HTML
@@ -329,9 +339,9 @@ controller.init(page, orientation, vibrate);
 ```
 Example:
 ```Javascript
-var controller = new AirController();
 controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
 ```
+
 
 ## Example
 ```HTML
@@ -363,6 +373,9 @@ controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
         #not_joined_number, #joined_number {
             background-color: #56ffe4
         }
+        #joined_profile {
+            background: url("http://via.placeholder.com/512x512") no-repeat center center;
+        }
     </style>
 </head>
 <body class="">
@@ -371,15 +384,15 @@ controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
     </div>
     <div id="NotJoined" air-page="NotJoined" class="page">
         <div id="not_joined_joystick" air-joystick="joystick" class="button">Joystick</div>
-        <div id="not_joined_button" air-btn="claim" class="button">Claim</div>
-        <div id="not_joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
-        <div id="not_joined_number" air-btn="number:6" class="button">Number Button</div>
+        <div id="not_joined_button" air-hold-btn="claim" class="button">Claim</div>
+        <div id="not_joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="not_joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
     <div id="Joined" air-page="Joined" class="page">
-        <div id="joined_joystick" air-joystick="joystick" class="button">Joystick</div>
-        <div id="joined_button" air-btn="button" class="button">Button</div>
-        <div id="joined_hero" air-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
-        <div id="joined_number" air-btn="number:6" class="button">Number Button</div>
+        <div id="joined_profile" air-profile-picture class="button"></div>
+        <div id="joined_button" air-tap-btn="button" class="button">Button</div>
+        <div id="joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
+        <div id="joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
 
     <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
@@ -390,8 +403,11 @@ controller.init("Loading", AirConsole.ORIENTATION_LANDSCAPE, true);
     <script type="text/javascript" src="AirController/js/AirController.js"></script>
 
     <script>
-        var controller = new AirController();
-        controller.init("NotJoined", AirConsole.ORIENTATION_LANDSCAPE, true);
+        controller.init("Joined", AirConsole.ORIENTATION_LANDSCAPE, true);
+
+        controller.onData = function (customData) { console.log("onData: "); console.log(customData); };
+        controller.onShowPage = function (newPage) { console.log("onShowPage "); console.log(newPage); };
+        controller.onBecameHero = function () {};
     </script>
 </body>
 </html>
