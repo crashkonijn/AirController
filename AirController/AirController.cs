@@ -56,6 +56,11 @@ namespace SwordGC.AirController
         /// Turns all debugs on and off
         /// </summary>
         public bool debug = true;
+
+        /// <summary>
+        /// Set to true if the savedata needs to be loaded when 
+        /// </summary>
+        public bool autoLoadSavedata = false;
         
         /// <summary>
         /// Contains all players
@@ -83,6 +88,12 @@ namespace SwordGC.AirController
         /// </summary>
         public Dictionary<int, Device> Devices { get; protected set; }
 
+        /// <summary>
+        /// The code in string form which controllers can use to connect to the game.
+        /// Defaults as "" but is updated in the onReady call.
+        /// </summary>
+        public string Code { get; private set; }
+
         #region UNITY_CALLBACKS
         void OnEnable()
         {
@@ -97,6 +108,7 @@ namespace SwordGC.AirController
             AirConsole.instance.onAdComplete += OnAdComplete;
             AirConsole.instance.onGameEnd += OnGameEnd;
             AirConsole.instance.onPremium += OnPremium;
+            AirConsole.instance.onPersistentDataLoaded += OnPersistentDataLoaded;
         }
 
         void Awake()
@@ -121,6 +133,7 @@ namespace SwordGC.AirController
         protected virtual void OnReady(string code)
         {
             IsReady = true;
+            Code = code;
         }
 
         protected virtual void OnMessage(int from, JToken data)
@@ -193,6 +206,30 @@ namespace SwordGC.AirController
             HasHero = true;
             GetDevice(deviceId).IsHero = true;
             UpdateDeviceStates();
+        }
+
+        protected virtual void OnPersistentDataLoaded (JToken data)
+        {
+            InternalDebug("OnPersistentDataLoaded: " + data.ToString());
+
+            JSONObject json = new JSONObject(data.ToString());
+
+            foreach (string key in json.keys)
+            {
+                foreach (Device d in Devices.Values)
+                {
+                    if (d.UID == key)
+                    {
+                        d.SaveData.FromJSON(json[key]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected virtual void OnPersistentDataStored (string UID)
+        {
+            InternalDebug("OnPersistentDataStored: " + UID);
         }
         #endregion
 
@@ -438,6 +475,26 @@ namespace SwordGC.AirController
             {
                 d.Input.Reset();
             }
+        }
+
+        /// <summary>
+        /// Saves the savedata of all devices
+        /// </summary>
+        public void SaveData ()
+        {
+            foreach (Device d in Devices.Values)
+            {
+                SaveData(d);
+            }
+        }
+
+        /// <summary>
+        /// Saves the savedata of a device
+        /// </summary>
+        /// <param name="device"></param>
+        public void SaveData (Device device)
+        {
+            AirConsole.instance.StorePersistentData("AirControllerData", new JValue(device.SaveData.ToJSON()), device.UID);
         }
 
         /// <summary>

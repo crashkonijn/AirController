@@ -12,7 +12,7 @@ namespace SwordGC.AirController
 
         private bool showUnclaimedPlayers = true;
         private bool showDevices = true;
-        private Dictionary<Device, bool> showInput = new Dictionary<Device, bool>();
+        private Dictionary<string, Dictionary<Device, bool>> showData = new Dictionary<string, Dictionary<Device, bool>>();
 
         public override void OnInspectorGUI()
         {
@@ -63,6 +63,7 @@ namespace SwordGC.AirController
                 controller.maxPlayers = EditorGUILayout.IntField("Max players", controller.maxPlayers);
 
             controller.debug = EditorGUILayout.Toggle("Debug", controller.debug);
+            controller.autoLoadSavedata = EditorGUILayout.Toggle("Auto load savedata", controller.autoLoadSavedata);
 
             EditorGUILayout.EndVertical();
         }
@@ -107,9 +108,9 @@ namespace SwordGC.AirController
         private void DrawInput (Device device)
         {
             EditorGUILayout.BeginVertical("Box");
-            SetShowInput(device, EditorGUILayout.Foldout(ShouldShowInput(device), "Input"));
+            SetShowInput("input", device, EditorGUILayout.Foldout(ShouldShowInput("input", device), "Input"));
 
-            if (ShouldShowInput(device))
+            if (ShouldShowInput("input", device))
             {
 
                 foreach (string key in device.Input.Axis.Keys)
@@ -128,13 +129,39 @@ namespace SwordGC.AirController
                         EditorGUILayout.LabelField(key + ":", "Tap (" + device.Input.Keys[key].value.ToString() + ")");
                     }
                 }
+            }
 
+            SetShowInput("motion", device, EditorGUILayout.Foldout(ShouldShowInput("motion", device), "Motion"));
+
+            if (ShouldShowInput("motion", device))
+            {
                 EditorGUILayout.LabelField("State: ", device.Input.orientation.state.ToString());
                 EditorGUILayout.LabelField("Orientation: ", device.Input.orientation.EulerAngles.ToString());
-                EditorGUILayout.LabelField("Orientation: ", "(" + Mathf.RoundToInt(device.Input.orientation.EulerAngles.x / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.y / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.z / 90) + ")");
+                //EditorGUILayout.LabelField("Orientation: ", "(" + Mathf.RoundToInt(device.Input.orientation.EulerAngles.x / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.y / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.z / 90) + ")");
                 EditorGUILayout.LabelField("Motion: ", device.Input.motion.gravityAcceleration.ToString());
                 EditorGUILayout.LabelField("Roll: ", device.Input.motion.GetRoll(device.Input.orientation.state).ToString());
                 EditorGUILayout.LabelField("Tilt: ", device.Input.motion.GetTilt(device.Input.orientation.state).ToString());
+            }
+
+            SetShowInput("savedata", device, EditorGUILayout.Foldout(ShouldShowInput("savedata", device), "Save Data"));
+            if (ShouldShowInput("savedata", device))
+            {
+                EditorGUILayout.LabelField("Int Store", EditorStyles.boldLabel);
+                foreach (KeyValuePair<string, int> data in device.SaveData.IntStore)
+                {
+                    EditorGUILayout.LabelField(data.Key, data.Value.ToString());
+                }
+
+                EditorGUILayout.LabelField("String Store", EditorStyles.boldLabel);
+                foreach (KeyValuePair<string, string> data in device.SaveData.StringStore)
+                {
+                    EditorGUILayout.LabelField(data.Key, data.Value);
+                }
+
+                if (GUILayout.Button("Save"))
+                {
+                    controller.SaveData(device);
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -152,18 +179,25 @@ namespace SwordGC.AirController
             EditorGUILayout.EndVertical();
         }
 
-        private bool ShouldShowInput (Device device)
+        private bool ShouldShowInput (string key, Device device)
         {
-            if (!showInput.ContainsKey(device)) showInput.Add(device, false);
+            if (!GetSettings(key).ContainsKey(device)) showData[key].Add(device, false);
 
-            return showInput[device];
+            return showData[key][device];
         }
 
-        private void SetShowInput (Device device, bool value)
+        private void SetShowInput (string key, Device device, bool value)
         {
-            if (!showInput.ContainsKey(device)) showInput.Add(device, false);
+            if (!GetSettings(key).ContainsKey(device)) showData[key].Add(device, false);
 
-            showInput[device] = value;
+            showData[key][device] = value;
+        }
+
+        private Dictionary<Device, bool> GetSettings(string key)
+        {
+            if (!showData.ContainsKey(key)) showData.Add(key, new Dictionary<Device, bool>());
+
+            return showData[key];
         }
     }
 }

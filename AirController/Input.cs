@@ -70,12 +70,8 @@ namespace SwordGC.AirController
                 }
                 else if (type == "gyro")
                 {
-                    Debug.Log(j["value"].ToString());
-
                     orientation.FromJSON(j["value"]);
                     motion.FromJSON(j["value"]);
-
-                    Debug.Log(orientation);
                 }
             }
         }

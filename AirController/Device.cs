@@ -23,6 +23,11 @@ namespace SwordGC.AirController
         public Input Input { get; protected set; }
 
         /// <summary>
+        /// Reference to the save data of this device
+        /// </summary>
+        public SaveData SaveData { get; private set; }
+
+        /// <summary>
         /// Set to true when this specific device is here
         /// </summary>
         private bool isHero;
@@ -127,6 +132,11 @@ namespace SwordGC.AirController
         }
 
         /// <summary>
+        /// The UID from AirConsole
+        /// </summary>
+        public string UID { get; private set; }
+
+        /// <summary>
         /// Holds the profile picture of the device in 512x512 px
         /// </summary>
         public Texture2D ProfilePicture { get; private set; }
@@ -135,7 +145,13 @@ namespace SwordGC.AirController
         {
             airController = AirController.Instance;
             DeviceId = deviceId;
+            UID = AirConsole.instance.GetUID(deviceId);
+
             Input = new Input();
+            SaveData = new SaveData();
+
+            if(airController.autoLoadSavedata)
+                AirConsole.instance.RequestPersistentData(new List<string> { UID } );
 
             airController.StartCoroutine(LoadProfilePicture());
         }
