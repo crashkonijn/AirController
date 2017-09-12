@@ -9,6 +9,9 @@ namespace SwordGC.AirController
     {
         public static float BUTTON_COOLDOWN = 0.05f;
 
+        public DeviceMotion motion;
+        public DeviceOrientation orientation;
+
         /// <summary>
         /// Holds all vector inputs
         /// </summary>
@@ -65,6 +68,15 @@ namespace SwordGC.AirController
                         Axis[lKey] = VectorFromJSON(j["value"]);
                     }
                 }
+                else if (type == "gyro")
+                {
+                    Debug.Log(j["value"].ToString());
+
+                    orientation.FromJSON(j["value"]);
+                    motion.FromJSON(j["value"]);
+
+                    Debug.Log(orientation);
+                }
             }
         }
 
@@ -92,13 +104,16 @@ namespace SwordGC.AirController
         }
 
         /// <summary>
-        /// Retuyrns true if the button was pressed down this frame
+        /// Returns true if the button was pressed down this frame
         /// </summary>
         public bool GetKeyDown (string key)
         {
             return GetKeyObject(key).active && !GetKeyObject(key).prevActive;
         }
 
+        /// <summary>
+        /// True if the button was released this frame
+        /// </summary>
         public bool GetKeyUp (string key)
         {
             return GetKeyObject(key).type == Key.TYPE.HOLD ? !GetKeyObject(key).active && GetKeyObject(key).prevActive : false;
@@ -216,6 +231,123 @@ namespace SwordGC.AirController
                 active = false;
             }
 
+        }
+
+        public struct DeviceOrientation
+        {
+            public enum STATE { UNKNOWN, FLAT, PORTRAIT, LEFT, RIGHT}
+            public STATE state;
+
+            public float alpha;
+            public float beta;
+            public float gamma;
+
+            public float rawAlpha;
+            public float rawBeta;
+            public float rawGamma;
+
+            public float X { get { return beta; } }
+            public float Y { get { return alpha; } }
+            public float Z { get { return gamma; } }
+
+            public Vector3 EulerAngles
+            {
+                get
+                {
+                    return new Vector3(beta, alpha, gamma);
+                }
+            }
+
+            public void FromJSON (JSONObject data)
+            {
+                if(data.keys.Contains("alpha"))
+                    alpha = LimitRotation(data["alpha"].f);
+
+                if (data.keys.Contains("beta"))
+                    beta = LimitRotation(data["beta"].f);
+
+                if (data.keys.Contains("gamma"))
+                    gamma = LimitRotation(data["gamma"].f);
+
+                DetectState();
+            }
+
+            private void DetectState ()
+            {
+                int x = Mathf.RoundToInt(X / 90f);
+                //int y = Mathf.RoundToInt(Y / 90f);
+                int z = Mathf.RoundToInt(Z / 90f);
+
+                if (x == 0 && z == 0)
+                {
+                    state = STATE.FLAT;
+                }
+                else if ((x == 0 && z == -1) || (x == 2 && z == 1))
+                {
+                    state = STATE.LEFT;
+                }
+                else if ((x == 0 && z == 1) || (x == -2 && z == -1))
+                {
+                    state = STATE.RIGHT;
+                }
+                else if (x == 1 && (z == 1 || z == 0 || z == -1))
+                {
+                    state = STATE.PORTRAIT;
+                }
+            }
+
+            private float LimitRotation (float f)
+            {
+                if (f > 180f)
+                {
+                    return f - 180;
+                }
+                else if (f < - 180f)
+                {
+                    return f + 180;
+                }
+
+                return f;
+            }
+        }
+
+        public struct DeviceMotion
+        {
+            public Vector3 acceleration;
+            public Vector3 gravityAcceleration;
+
+            public float GetRoll(DeviceOrientation.STATE state)
+            {
+                switch (state)
+                {
+                    case DeviceOrientation.STATE.PORTRAIT: return -gravityAcceleration.x;
+                    case DeviceOrientation.STATE.LEFT: return gravityAcceleration.y;
+                    case DeviceOrientation.STATE.RIGHT: return -gravityAcceleration.y;
+                    case DeviceOrientation.STATE.FLAT: return -gravityAcceleration.x;
+                    default: return 0f;
+                }
+            }
+
+            public float GetTilt(DeviceOrientation.STATE state)
+            {
+                switch (state)
+                {
+                    case DeviceOrientation.STATE.PORTRAIT: return gravityAcceleration.z;
+                    case DeviceOrientation.STATE.LEFT: return gravityAcceleration.z;
+                    case DeviceOrientation.STATE.RIGHT: return gravityAcceleration.z;
+                    case DeviceOrientation.STATE.FLAT: return -gravityAcceleration.y;
+                    default: return 0f;
+                }
+            }
+
+            public void FromJSON(JSONObject data)
+            {
+                if (data.keys.Contains("x") && data.keys.Contains("y") && data.keys.Contains("z"))
+                    acceleration = new Vector3(data["x"].f, data["y"].f - 9.81f, data["z"].f);
+
+                if (data.keys.Contains("x") && data.keys.Contains("y") && data.keys.Contains("z"))
+                    gravityAcceleration = new Vector3(data["x"].f, data["y"].f, data["z"].f);
+            }
         }
     }
 }

@@ -111,6 +111,7 @@ namespace SwordGC.AirController
 
             if (ShouldShowInput(device))
             {
+
                 foreach (string key in device.Input.Axis.Keys)
                 {
                     EditorGUILayout.LabelField(key + ":", "(" + device.Input.Axis[key].x + ", " + device.Input.Axis[key].y + ")");
@@ -127,6 +128,13 @@ namespace SwordGC.AirController
                         EditorGUILayout.LabelField(key + ":", "Tap (" + device.Input.Keys[key].value.ToString() + ")");
                     }
                 }
+
+                EditorGUILayout.LabelField("State: ", device.Input.orientation.state.ToString());
+                EditorGUILayout.LabelField("Orientation: ", device.Input.orientation.EulerAngles.ToString());
+                EditorGUILayout.LabelField("Orientation: ", "(" + Mathf.RoundToInt(device.Input.orientation.EulerAngles.x / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.y / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.z / 90) + ")");
+                EditorGUILayout.LabelField("Motion: ", device.Input.motion.gravityAcceleration.ToString());
+                EditorGUILayout.LabelField("Roll: ", device.Input.motion.GetRoll(device.Input.orientation.state).ToString());
+                EditorGUILayout.LabelField("Tilt: ", device.Input.motion.GetTilt(device.Input.orientation.state).ToString());
             }
 
             EditorGUILayout.EndVertical();
