@@ -42,7 +42,7 @@
         <div id="not_joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
         <div id="not_joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
-    <div id="Joined" air-page="Joined" class="page">
+    <div id="Joined" air-page="Joined" air-gyroscope="true" class="page">
         <div id="joined_profile" air-profile-picture class="button"></div>
         <div id="joined_button" air-tap-btn="button" class="button">Button</div>
         <div id="joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
@@ -54,10 +54,11 @@
     <script src="AirController/js/victor.min.js"></script>
     <script src="AirController/js/jquery-1.11.3.min.js" type="text/javascript"></script>
     <script src="AirController/js/hammer.min.js" type="text/javascript"></script>
+    <script src="AirController/js/gyronorm.complete.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="AirController/js/AirController.js"></script>
 
     <script>
-        controller.init("Joined", AirConsole.ORIENTATION_LANDSCAPE, true);
+        controller.init("Joined", AirConsole.ORIENTATION_PORTRAIT, true);
 
         controller.onData = function (customData) { console.log("onData: "); console.log(customData); };
         controller.onShowPage = function (newPage) { console.log("onShowPage "); console.log(newPage); };

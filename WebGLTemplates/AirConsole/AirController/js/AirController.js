@@ -11,6 +11,7 @@ var AirController = function AirController() {
     this.orientation ;
     this.vibrate;
     this.customData = {};
+    this.gyroscopeData = {};
 
     this.onData = function (customData) {};
     this.onShowPage = function (newPage) {};
@@ -41,23 +42,16 @@ var AirController = function AirController() {
     }
 
     this.findPages = function findPages() {
-        t_pages = document.querySelectorAll("[air-page]");
+        var t_pages = document.querySelectorAll("[air-page]");
         for (var i = 0; i < t_pages.length; i++) {
             this.addPage(t_pages[i].id);
         }
-    }
 
-    this.findProfilePictures = function findProfilePictures() {
-        var t_buttons = document.querySelectorAll("[air-profile-picture]");
+        // look for gyroscope
+        var t_buttons = document.querySelectorAll("[air-gyroscope]");
         for (var i = 0; i < t_buttons.length; i++) {
-            this.addProfilePicture(t_buttons[i].id);
+            this.pages[t_buttons[i].id].sendGyroscope = true;
         }
-    }
-
-    this.addProfilePicture = function addProfilePicture (elementId){
-        var img = parent.sender.airconsole.getProfilePicture(parent.sender.airconsole.getDeviceId(), 512);
-        console.log("found image for " + elementId + ": " + img);
-        document.getElementById(elementId).style.backgroundImage = "url('" + img +"')";
     }
 
     this.sendData = function sendData (button) {
@@ -141,7 +135,10 @@ var Page = function Page(elementId, parent) {
     this.buttons = {};
     this.joysticks = {};
 
+    this.sendGyroscope = false;
+
     this.findButtons = function findButtons() {
+
         var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-tap-btn]");
         for (var i = 0; i < t_buttons.length; i++) {
             console.log(t_buttons[i].id);
@@ -153,8 +150,6 @@ var Page = function Page(elementId, parent) {
             console.log("HOLD BTN" + t_buttons[i].id);
             this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-hold-btn"), 'hold', t_buttons[i].getAttribute("air-hero"));
         }
-
-
     }
 
     // registers a button to this page
@@ -205,6 +200,14 @@ var Page = function Page(elementId, parent) {
                 };
                 curInput[this.joysticks[key].key] = tJoystick;
             }
+        }
+
+        if(this.sendGyroscope){
+            var gyro = {
+                type: "gyro",
+                value: parent.gyroscopeData
+            }
+            curInput["gyro"] = gyro;
         }
 
         this.input = {};
@@ -429,7 +432,7 @@ var Sender = function Sender() {
     this.webRtcTimestamp = 0;
 
     this.init = function init (orientation) {
-        this.airconsole = new AirConsole({orientation: orientation});
+        this.airconsole = new AirConsole({orientation: orientation, device_motion: 120});
 
         this.airconsole.onDeviceStateChange = function (deviceId, data) {
             var customIsDeclared = true;
@@ -465,6 +468,11 @@ var Sender = function Sender() {
                     console.error(e);
                 }
             }
+        }
+
+        this.airconsole.onDeviceMotion = function (data) {
+            controller.gyroscopeData = data;
+            controller.sendData(true);
         }
 
         this.interval = 1 / this.fps * 1050;
