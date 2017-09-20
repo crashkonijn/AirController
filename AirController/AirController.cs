@@ -58,7 +58,7 @@ namespace SwordGC.AirController
         public bool debug = true;
 
         /// <summary>
-        /// Set to true if the savedata needs to be loaded when 
+        /// Set to true if the savedata needs to be loaded when a device connects
         /// </summary>
         public bool autoLoadSavedata = false;
         
