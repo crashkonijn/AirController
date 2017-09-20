@@ -245,7 +245,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns a player object
         /// </summary>
-        public Player GetPlayer(int playerId)
+        public virtual Player GetPlayer(int playerId)
         {
             return Players.ContainsKey(playerId) ? Players[playerId] : null;
         }
@@ -355,7 +355,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Safe function to get a device
         /// </summary>
-        public Device GetDevice (int deviceId)
+        public virtual Device GetDevice (int deviceId)
         {
             return Devices.ContainsKey(deviceId) ? Devices[deviceId] : null;
         }
@@ -392,7 +392,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Return the player based on a deviceId
         /// </summary>
-        public Player GetPlayerFromDevice(int deviceId)
+        public virtual Player GetPlayerFromDevice(int deviceId)
         {
             foreach (Player p in Players.Values)
             {
