@@ -50,6 +50,9 @@ namespace SwordGC.AirController.InputTypes
             active = false;
         }
 
+        /// <summary>
+        /// The callback gets called when a swipe event happens
+        /// </summary>
         public void Swiped (Action<DIRECTION> callback)
         {
             if (IsSwiped)
@@ -57,7 +60,10 @@ namespace SwordGC.AirController.InputTypes
                 callback(Direction);
             }
         }
-        
+
+        /// <summary>
+        /// The callback gets called when a swipe up event happens
+        /// </summary>
         public void SwipedUp (Action callback)
         {
             if (IsSwiped && Direction == DIRECTION.UP)
@@ -66,6 +72,9 @@ namespace SwordGC.AirController.InputTypes
             }
         }
 
+        /// <summary>
+        /// The callback gets called when a swipe down event happens
+        /// </summary>
         public void SwipedDown(Action callback)
         {
             if (IsSwiped && Direction == DIRECTION.DOWN)
@@ -74,6 +83,9 @@ namespace SwordGC.AirController.InputTypes
             }
         }
 
+        /// <summary>
+        /// The callback gets called when a swipe left event happens
+        /// </summary>
         public void SwipedLeft(Action callback)
         {
             if (IsSwiped && Direction == DIRECTION.LEFT)
@@ -82,6 +94,9 @@ namespace SwordGC.AirController.InputTypes
             }
         }
 
+        /// <summary>
+        /// The callback gets called when a swipe right event happens
+        /// </summary>
         public void SwipedRight(Action callback)
         {
             if (IsSwiped && Direction == DIRECTION.RIGHT)

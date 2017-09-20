@@ -46,6 +46,16 @@ One could argue that players and devices could be the same, but the fact that th
 
 Another example would be our game Basher Beatdown where there are only four players allowed. When the game starts, four players are created, and can then be claimed by a device. In this case, you can still receive input from all players (Devices) that joined.
 
+## Warning
+
+The script execution order must be set in the right order for the system to work. They should be in this order:
+```
+NDream.AirConsole.AirConsole
+SwordGC.AirController.AirController
+[Extended AirController Class]
+Default Time
+```
+
 ## AirController (Unity)
 
 The AirController is the base class that handles everything, even though AirController works out of the box it is advised that all 3 classes get extended for custom behavior.
@@ -377,7 +387,7 @@ public Vector3 EulerAngles
 
 ```
 ### TouchPan (Drag)
-```
+```C#
 // The position (in screen pixels) when the event started
 public Vector2 StartPosition { get; private set; }
 
