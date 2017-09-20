@@ -9,13 +9,16 @@ var AirController = function AirController() {
     this.sender = null;
     this.enableHero = false;
     this.orientation ;
-    this.vibrate;
+    this.vibrate = true;
     this.customData = {};
     this.gyroscopeData = {};
 
     this.onData = function (customData) {};
     this.onShowPage = function (newPage) {};
     this.onBecameHero = function () {};
+
+    this.swipeEvent;
+    this.panEvent;
 
     // call this to start running the controller
     this.init = function init(startPage, orientation, vibrate) {
@@ -30,13 +33,14 @@ var AirController = function AirController() {
             var t_buttons = document.querySelectorAll("[air-profile-picture]");
             for (var i = 0; i < t_buttons.length; i++) {
                 var img = this.getProfilePicture(this.getDeviceId(), 512);
-                console.log("found image for " + t_buttons[i].id + ": " + img);
                 document.getElementById(t_buttons[i].id).style.backgroundImage = "url('" + img +"')";
             }
         }
 
         // find all the pages
         this.findPages();
+        // search for settings
+        this.findPageSettings();
         // show the first pages
         this.showPage(startPage);
     }
@@ -46,11 +50,66 @@ var AirController = function AirController() {
         for (var i = 0; i < t_pages.length; i++) {
             this.addPage(t_pages[i].id);
         }
+    }
 
+    this.findPageSettings = function findPageSettings() {
         // look for gyroscope
-        var t_buttons = document.querySelectorAll("[air-gyroscope]");
-        for (var i = 0; i < t_buttons.length; i++) {
-            this.pages[t_buttons[i].id].sendGyroscope = true;
+        var t_page = document.querySelectorAll("[air-gyroscope]");
+        for (var i = 0; i < t_page.length; i++) {
+            this.pages[t_page[i].id].sendGyroscope = true;
+        }
+
+        // look for pan
+        var pan = false;
+        var t_page = document.querySelectorAll("[air-pan]");
+        for (var i = 0; i < t_page.length; i++) {
+            this.pages[t_page[i].id].sendPanEvents = true;
+            pan = true;
+        }
+
+        // look for swipe
+        var swipe = false;
+        var t_page = document.querySelectorAll("[air-swipe]");
+        for (var i = 0; i < t_page.length; i++) {
+            this.pages[t_page[i].id].sendSwipeEvents = true;
+            swipe = true;
+        }
+
+        if(pan || swipe){
+            this.startHammer(pan, swipe);
+        }
+    }
+
+    this.startHammer = function startHammer (pan, swipe) {
+        console.log("hammer time");
+
+        var mc = new Hammer(document);
+
+        if(swipe){
+            mc.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+            mc.on("swipeleft swiperight swipeup swipedown", function(e) {
+                console.log(e);
+                controller.swipeEvent = {
+                    type: "swipe",
+                    value: e.type
+                };
+                controller.sendData(true);
+            });
+        }
+
+        if(pan){
+            mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+            mc.on("panstart panmove panend", function(e) {
+                console.log(e);
+                controller.panEvent = {
+                    type: "pan",
+                    value: {
+                        vector: e.center,
+                        end: e.type == "panend"
+                    }
+                };
+                controller.sendData(e.type == "panend" || e.type == "panstart");
+            });
         }
     }
 
@@ -92,8 +151,6 @@ var AirController = function AirController() {
     this.findPageButtons = function findPageButtons (page) {
         // find buttons
         page.findButtons();
-        // find the joysticks
-        page.findJoysticks();
     }
 
     this.getPage = function getPage(elementId) {
@@ -119,8 +176,6 @@ var AirController = function AirController() {
 
         this.onShowPage(this.pages[elementId]);
     }
-
-
 }
 
 // page class
@@ -133,32 +188,31 @@ var Page = function Page(elementId, parent) {
 
     // contains a list of all buttons
     this.buttons = {};
-    this.joysticks = {};
 
     this.sendGyroscope = false;
+    this.sendSwipeEvents = false;
+    this.sendPanEvents = false;
 
     this.findButtons = function findButtons() {
-
         var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-tap-btn]");
         for (var i = 0; i < t_buttons.length; i++) {
-            console.log(t_buttons[i].id);
             this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-tap-btn"), 'tap', t_buttons[i].getAttribute("air-hero"));
         }
 
         var t_buttons = document.getElementById(this.elementId).querySelectorAll("[air-hold-btn]");
         for (var i = 0; i < t_buttons.length; i++) {
-            console.log("HOLD BTN" + t_buttons[i].id);
             this.addButton(t_buttons[i].id, t_buttons[i].getAttribute("air-hold-btn"), 'hold', t_buttons[i].getAttribute("air-hero"));
         }
     }
 
     // registers a button to this page
-    this.addButton = function addButton(elementId, key, hero) {
-        if(hero){
+    this.addButton = function addButton(elementId, key, type, hero) {
+        console.log("hero: " + hero);
+        if(hero == "true"){
             console.log("found hero button: " + elementId);
         }
 
-        var button = new Button(this, elementId, key, hero);
+        var button = new Button(this, elementId, key, type, hero);
         this.buttons[elementId] = button;
         return button;
     }
@@ -167,47 +221,21 @@ var Page = function Page(elementId, parent) {
         return this.buttons[elementId];
     }
 
-    this.findJoysticks = function findJoysticks() {
-        var t_joysticks = document.getElementById(this.elementId).querySelectorAll("[air-joystick]");
-
-        for (var i = 0; i < t_joysticks.length; i++) {
-            this.addJoystick(t_joysticks[i].id, t_joysticks[i].getAttribute("air-joystick"));
-        }
-    }
-
-    this.addJoystick = function addJoystick(elementId, key) {
-        var joystick = new Joystick(this, elementId, key);
-        joystick.init();
-
-        this.joysticks[elementId] = joystick;
-        return joystick;
-    }
-
     this.getInput = function getInput() {
         var curInput = this.input;
-
-        for (var key in this.joysticks) {
-            if(this.joysticks[key].diff > 5 ){
-                var input = this.joysticks[key].input;
-                this.joysticks[key].lastSend = this.joysticks[key].input;
-
-                var tJoystick = {
-                    type: "vector",
-                    value: {
-                        x: input.x,
-                        y: input.y
-                    }
-                };
-                curInput[this.joysticks[key].key] = tJoystick;
-            }
-        }
 
         if(this.sendGyroscope){
             var gyro = {
                 type: "gyro",
-                value: parent.gyroscopeData
+                value: this.parent.gyroscopeData
             }
             curInput["gyro"] = gyro;
+        }
+        if(this.sendSwipeEvents && this.parent.swipeEvent != null){
+            curInput["swipe"] = this.parent.swipeEvent;
+        }
+        if(this.sendPanEvents && this.parent.panEvent != null){
+            curInput["pan"] = this.parent.panEvent;
         }
 
         this.input = {};
@@ -218,17 +246,11 @@ var Page = function Page(elementId, parent) {
         for (key in this.buttons) {
             this.buttons[key].register();
         }
-        for (key in this.joysticks) {
-            this.joysticks[key].register();
-        }
     }
 
     this.unregister = function unregister() {
         for (key in this.buttons) {
             this.buttons[key].unregister();
-        }
-        for (key in this.joysticks) {
-            this.joysticks[key].unregister();
         }
     }
 
@@ -330,10 +352,13 @@ var Button = function Button(page, elementId, key, type, hero) {
     }
 
     this.eventHandler = function eventHandler(event) {
-        if(this.hero == "true" && AirController.enableHero == false){
-            AirController.sender.airconsole.getPremium();
+        console.log("hero test: " + this.hero);
+        if(this.hero == "true" && controller.enableHero == false){
+            controller.sender.airconsole.getPremium();
+            console.log("GetPremium");
             return;
         }
+        console.log("test");
 
         if ("vibrate" in navigator) {
             navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
@@ -347,69 +372,6 @@ var Button = function Button(page, elementId, key, type, hero) {
         this.page.eventCallback(this.elementId, event);
         // call the callback if there is one
         if (this.callback != null) this.callback(event);
-    }
-}
-
-var Joystick = function Joytstick(page, elementId, key) {
-    this.elementId = elementId;
-    this.page = page;
-    this.key = key;
-    this.joytsick = null;
-    this.input = new Victor(0, 0);
-    this.lastSend = new Victor(0, 0);
-    this.active = false;
-    this.diff = 0;
-
-    this.init = function init () {
-        //console.log("register: " + this.key);
-        this.joystick = new VirtualJoystick({
-            container: document.getElementById(this.elementId),
-            mouseSupport: true,
-            limitStickTravel: true,
-            stickRadius: 50
-        });
-
-        window.setInterval((function (self) {         //Self-executing func which takes 'this' as self
-            return function () {   //Return a function in the context of 'self'
-                self.run(); //Thing you wanted to run as non-window 'this'
-            }
-        })(this), 1 / 30 * 1000);
-    }
-
-    this.register = function register() {
-        this.active = true;
-    }
-
-    this.unregister = function unregister () {
-        this.active = false;
-    }
-
-    this.run = function run () {
-        if(!this.active) return;
-
-        this.input = new Victor(this.joystick.deltaX(), this.joystick.deltaY());
-        this.diff = this.angleBetween(this.input, this.lastSend);
-
-        // sudden change
-        if(this.diff > 45 || this.diff < -45){
-            controller.sendData(true);
-        }
-    }
-
-    this.angleBetween = function angleBetween (vector1, vector2) {
-        var rad = Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x);
-        var angle = rad  * 180 / Math.PI;
-
-        if(angle > 180){
-            angle -= Math.ceil(angle / 180) * 180;
-        }
-        else if (angle < -180) {
-            angle += Math.ceil((angle *-1) / 180) * 180;
-        }
-
-        if (angle < 0) angle *= -1;
-
-        return angle;
     }
 }
 
@@ -531,10 +493,16 @@ var Sender = function Sender() {
         this.lastSendTimestamp = Date.now();
 
         if (Object.keys(this.data).length > 0 ) {
-            this.airconsole.message(0, this.data);
+
             console.log(this.data);
+
+            this.airconsole.message(0, this.data);
+
             this.lastData = this.data;
             this.data = {};
+
+            controller.panEvent = null;
+            controller.swipeEvent = null;
         }
         else {
             //console.log("no data to send");

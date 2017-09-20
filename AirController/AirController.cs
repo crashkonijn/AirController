@@ -95,7 +95,7 @@ namespace SwordGC.AirController
         public string Code { get; private set; }
 
         #region UNITY_CALLBACKS
-        void OnEnable()
+        protected virtual void OnEnable()
         {
             AirConsole.instance.onReady += OnReady;
             AirConsole.instance.onMessage += OnMessage;
@@ -111,7 +111,7 @@ namespace SwordGC.AirController
             AirConsole.instance.onPersistentDataLoaded += OnPersistentDataLoaded;
         }
 
-        void Awake()
+        protected virtual void Awake()
         {
             Instance = this;
 
@@ -123,7 +123,7 @@ namespace SwordGC.AirController
             ResetPlayers();
         }
 
-        void LateUpdate()
+        protected virtual void LateUpdate()
         {
             ResetInput();
         }
@@ -233,6 +233,48 @@ namespace SwordGC.AirController
         }
         #endregion
 
+        #region AIRCONTROLLER_CALLBACKS
+        /// <summary>
+        /// Is called when a player is claimed
+        /// </summary>
+        public virtual void OnPlayerClaimed (Player player)
+        {
+            InternalDebug("OnPlayerClaimed: " + player.PlayerId);
+        }
+
+        /// <summary>
+        /// Is called when a player is unclaimed
+        /// </summary>
+        public virtual void OnPlayerUnclaimed (Player player)
+        {
+            InternalDebug("OnPlayerUnClaimed: " + player.PlayerId);
+        }
+
+        /// <summary>
+        /// Is called when a device is connected
+        /// </summary>
+        public virtual void OnDeviceConnected (Device device)
+        {
+            InternalDebug("OnDeviceConnected: " + device.DeviceId);
+        }
+
+        /// <summary>
+        /// Is called when a device is disconnected
+        /// </summary>
+        public virtual void OnDeviceDisconnected (Device device)
+        {
+            InternalDebug("OnDeviceDisconnected: " + device.DeviceId);
+        }
+
+        /// <summary>
+        /// Is called when a device is reconnected
+        /// </summary>
+        public virtual void OnDeviceReconnected (Device device)
+        {
+            InternalDebug("OnDeviceReconnected: " + device.DeviceId);
+        }
+        #endregion
+
         #region PLAYER_FUNCTIONS
         /// <summary>
         /// Called when a new player is needed, override this function to insert your own Player extended class
@@ -318,7 +360,7 @@ namespace SwordGC.AirController
             }
             else
             {
-                InternalDebug("Device " + deviceId + " vailed to claim a player");
+                InternalDebug("Device " + deviceId + " failed to claim a player");
             }
         }
 
@@ -344,6 +386,8 @@ namespace SwordGC.AirController
                 if (Players[i].state == Player.STATE.DISCONNECTED && Players[i].DeviceId == deviceId)
                 {
                     Players[i].Claim(deviceId);
+
+                    OnDeviceReconnected(GetDevice(deviceId));
                     return true;
                 }
             }
@@ -407,17 +451,20 @@ namespace SwordGC.AirController
         /// </summary>
         private void ConnectDevice (int deviceId)
         {
+            // create device
+            CreateDevice(deviceId);
+
             if (ReconnectWithPlayer(deviceId))
             {
                 InternalDebug("Reconnected " + deviceId + " with player");
+                return;
             }
             else if (joinMode == JOINMODE.AUTO)
             {
                 ClaimPlayer(deviceId);
             }
 
-            // create device
-            CreateDevice(deviceId);
+            OnDeviceConnected(GetDevice(deviceId));
         }
 
         /// <summary>
@@ -430,6 +477,8 @@ namespace SwordGC.AirController
                 {
                     GetDevice(deviceId).Player.Disconnect();
                 }
+
+                OnDeviceDisconnected(GetDevice(deviceId));
 
                 Devices.Remove(deviceId);
                 UpdateDeviceStates();

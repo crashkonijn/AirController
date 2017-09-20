@@ -282,7 +282,7 @@ public void SetData (string key, string data) {}
 // Returns true if the button was pressed this frame
 public bool GetKey (string key) {}
 
-// Retuyrns true if the button was pressed down this frame
+// Returns true if the button was pressed down this frame
 public bool GetKeyDown (string key) {}
 
 // True if the button was released this frame.

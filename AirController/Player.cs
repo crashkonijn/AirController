@@ -89,8 +89,10 @@ namespace SwordGC.AirController
         /// </summary>
         public Player Claim(int deviceId)
         {
-            this.DeviceId = deviceId;
+            DeviceId = deviceId;
             state = STATE.CLAIMED;
+
+            airController.OnPlayerClaimed(this);
             return this;
         }
 
@@ -101,6 +103,8 @@ namespace SwordGC.AirController
         {
             DeviceId = -1;
             state = STATE.UNCLAIMED;
+
+            airController.OnPlayerUnclaimed(this);
         }
 
         /// <summary>

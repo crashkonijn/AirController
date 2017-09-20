@@ -120,7 +120,7 @@ namespace SwordGC.AirController
 
                 foreach (string key in device.Input.Keys.Keys)
                 {
-                    if (device.Input.Keys[key].type == Input.Key.TYPE.HOLD)
+                    if (device.Input.Keys[key].type == InputTypes.Key.TYPE.HOLD)
                     {
                         EditorGUILayout.LabelField(key + ":", "Hold (" + device.Input.Keys[key].active + ", " + device.Input.Keys[key].value.ToString() + ")");
                     }
@@ -135,12 +135,12 @@ namespace SwordGC.AirController
 
             if (ShouldShowInput("motion", device))
             {
-                EditorGUILayout.LabelField("State: ", device.Input.orientation.state.ToString());
-                EditorGUILayout.LabelField("Orientation: ", device.Input.orientation.EulerAngles.ToString());
+                EditorGUILayout.LabelField("State: ", device.Input.Orientation.state.ToString());
+                EditorGUILayout.LabelField("Orientation: ", device.Input.Orientation.EulerAngles.ToString());
                 //EditorGUILayout.LabelField("Orientation: ", "(" + Mathf.RoundToInt(device.Input.orientation.EulerAngles.x / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.y / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.z / 90) + ")");
-                EditorGUILayout.LabelField("Motion: ", device.Input.motion.gravityAcceleration.ToString());
-                EditorGUILayout.LabelField("Roll: ", device.Input.motion.GetRoll(device.Input.orientation.state).ToString());
-                EditorGUILayout.LabelField("Tilt: ", device.Input.motion.GetTilt(device.Input.orientation.state).ToString());
+                EditorGUILayout.LabelField("Motion: ", device.Input.Motion.gravityAcceleration.ToString());
+                EditorGUILayout.LabelField("Roll: ", device.Input.Motion.GetRoll(device.Input.Orientation.state).ToString());
+                EditorGUILayout.LabelField("Tilt: ", device.Input.Motion.GetTilt(device.Input.Orientation.state).ToString());
             }
 
             SetShowInput("savedata", device, EditorGUILayout.Foldout(ShouldShowInput("savedata", device), "Save Data"));

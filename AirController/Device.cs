@@ -132,6 +132,17 @@ namespace SwordGC.AirController
         }
 
         /// <summary>
+        /// Returns the classes that are used internally
+        /// </summary>
+        private string InternalClasses
+        {
+            get
+            {
+                return IsHero ? "" : "nohero";
+            }
+        }
+
+        /// <summary>
         /// The UID from AirConsole
         /// </summary>
         public string UID { get; private set; }
@@ -165,7 +176,7 @@ namespace SwordGC.AirController
 
             j.AddField("playerId", PlayerId);
             j.AddField("view", View);
-            j.AddField("class", Classes);
+            j.AddField("class", InternalClasses + " " + Classes);
             j.AddField("enablehero", IsHero);
 
             JSONObject cData = new JSONObject(JSONObject.Type.OBJECT);
