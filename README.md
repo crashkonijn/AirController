@@ -19,8 +19,9 @@ Controller:
 * Handles hero users, can disable hero only buttons automatically. It will show the become hero screen if a non-hero pushes it.
 * Smart sending of input, to minimize player input delay.
 * HTML classes can be assigned by the Unity script, which then gets put in the body tag for easy CSS adjustments. (Think colors, enabling/disabling of things).
-* Supports vibration on button press.
 * Easy profile picture loading
+* Drag & swipe events
+* Device orientation and motion
 
 Unity:
 * Auto handles the joining of devices.
@@ -30,6 +31,8 @@ Unity:
 * AirController handles all the input sent by the controller. All you have to do is Player.Input.GetKeyDown("jump");
 * Custom editor to keep track of what's going on.
 * Auto profile picture loading
+* Auto orientation detection
+* Orientation based roll/tilt
 
 ---
 
@@ -98,6 +101,9 @@ public int maxPlayers = 4;
 // Turns all debugs on and off
 public bool debug = true;
 
+// Set to true if the savedata needs to be loaded when a device connects
+public bool autoLoadSavedata = false;
+
 // Contains all players
 public Dictionary<int, Player> Players { get; protected set; }
 
@@ -106,6 +112,27 @@ public int PlayersAvailable;
 
 // Contains all devices
 public Dictionary<int, Device> Devices { get; protected set; }
+
+// The code in string form which controllers can use to connect to the game.
+// Defaults as "" but is updated in the onReady call.
+public string Code { get; private set; }
+```
+### Callbacks
+```C#
+// Is called when a player is claimed
+public virtual void OnPlayerClaimed (Player player){}
+
+// Is called when a player is unclaimed
+public virtual void OnPlayerUnclaimed (Player player){}
+
+// Is called when a device is connected
+public virtual void OnDeviceConnected (Device device){}
+
+// Is called when a device is disconnected
+public virtual void OnDeviceDisconnected (Device device){}
+
+// Is called when a device is reconnected
+public virtual void OnDeviceReconnected (Device device){}
 ```
 
 ### Functions
@@ -277,6 +304,21 @@ public void SetData (string key, string data) {}
 
 ## Input
 
+### Variables
+```C#
+// Reference to the DeviceMotion data
+public DeviceMotion Motion { get; private set; }
+
+// Reference to the DeviceOrientation data
+public DeviceOrientation Orientation { get; private set; }
+
+// Reference to the TouchSwipe data
+public TouchSwipe Swipe { get; private set; }
+
+// Reference to the TouchPan data
+public TouchPan Pan { get; private set; }
+```
+
 ### Functions
 ```C#
 // Returns true if the button was pressed this frame
@@ -288,14 +330,6 @@ public bool GetKeyDown (string key) {}
 // True if the button was released this frame.
 // Note: Only works for "hold" buttons
 public bool GetKeyUp (string key) {}
-
-// Returns the axis of an object
-// Example: The controller holds a joystick called Movement
-// GetAxis("MovementHorizontal") will return the x value of movement
-public float GetAxis (string key) {}
-
-// Returns the vector of a given key
-public Vector2 GetVector (string key) {}
 ```
 
 # AirController (HTML/JS)
@@ -342,14 +376,17 @@ When the following class is added to an object it's alpha will become 0.5f when 
 class="herodisabled"
 ```
 
-### Joystick
-By adding the following to an HTML object it will become a joystick:
-```HTML
-air-joystick="name"
-```
-
 ### Profile picture
 By adding "air-profile-picture" to an HTML element it's CSS background-image value will be set to the profile picture 
+
+### Device motion & orientation
+By adding air-gyroscope="true" to an air-page element it will send gyro data when on that page
+
+### Pan (drag)
+By adding air-pan="true" to an air-page element it will send pan (drag) events when on that page
+
+### Swipe
+By adding air-swipe="true" to an air-page element it will send swipe events when on that page
 
 ## Javascript
 
@@ -422,16 +459,8 @@ controller.onBecameHero = function () {};
         <div id="not_joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
         <div id="not_joined_number" air-tap-btn="number:6" class="button">Number Button</div>
     </div>
-    <div id="Joined" air-page="Joined" class="page">
-        <div id="joined_profile" air-profile-picture class="button"></div>
-        <div id="joined_button" air-tap-btn="button" class="button">Button</div>
-        <div id="joined_hero" air-tap-btn="hero" air-hero="true" class="button herodisabled">Hero only</div>
-        <div id="joined_number" air-tap-btn="number:6" class="button">Number Button</div>
-    </div>
 
     <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
-    <script src="AirController/js/virtualjoystick.js"></script>
-    <script src="AirController/js/victor.min.js"></script>
     <script src="AirController/js/jquery-1.11.3.min.js" type="text/javascript"></script>
     <script src="AirController/js/hammer.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="AirController/js/AirController.js"></script>
