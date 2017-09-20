@@ -10,8 +10,8 @@ namespace SwordGC.AirController.InputTypes
         private bool active;
         private bool prevActive;
 
-        public Vector2 touchStart;
-        public Vector2 touchCurrent;
+        public Vector2 StartPosition { get; private set; }
+        public Vector2 CurrentPosition { get; private set; }
 
         /// <summary>
         /// Returns true on the first frame of this event
@@ -55,11 +55,11 @@ namespace SwordGC.AirController.InputTypes
 
                 if (!IsTouching)
                 {
-                    touchStart = v;
+                    StartPosition = v;
                     active = true;
                 }
 
-                touchCurrent = v;
+                CurrentPosition = v;
 
                 if (data["value"]["end"].b)
                 {
@@ -80,7 +80,7 @@ namespace SwordGC.AirController.InputTypes
         {
             if (IsTouchStart)
             {
-                callback(touchStart);
+                callback(StartPosition);
             }
         }
         
@@ -91,7 +91,7 @@ namespace SwordGC.AirController.InputTypes
         {
             if (IsTouching)
             {
-                callback(touchStart, touchCurrent);
+                callback(StartPosition, CurrentPosition);
             }
         }
         
@@ -102,7 +102,7 @@ namespace SwordGC.AirController.InputTypes
         {
             if (IsTouchEnd)
             {
-                callback(touchStart, touchCurrent);
+                callback(StartPosition, CurrentPosition);
             }
         }
     }

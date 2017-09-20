@@ -7,16 +7,15 @@ namespace SwordGC.AirController.InputTypes
 {
     public class DeviceMotion : IInput
     {
-        public Vector3 acceleration;
-        public Vector3 gravityAcceleration;
+        /// <summary>
+        /// Holds the acceleration of this device, including gravity
+        /// </summary>
+        public Vector3 GravityAcceleration { get; private set; }
 
         public void HandleData(JSONObject data)
         {
             if (data.keys.Contains("x") && data.keys.Contains("y") && data.keys.Contains("z"))
-                acceleration = new Vector3(data["x"].f, data["y"].f - 9.81f, data["z"].f);
-
-            if (data.keys.Contains("x") && data.keys.Contains("y") && data.keys.Contains("z"))
-                gravityAcceleration = new Vector3(data["x"].f, data["y"].f, data["z"].f);
+                GravityAcceleration = new Vector3(data["x"].f, data["y"].f, data["z"].f);
         }
 
         public void Update()
@@ -31,10 +30,10 @@ namespace SwordGC.AirController.InputTypes
         {
             switch (state)
             {
-                case DeviceOrientation.STATE.PORTRAIT: return -gravityAcceleration.x;
-                case DeviceOrientation.STATE.LEFT: return gravityAcceleration.y;
-                case DeviceOrientation.STATE.RIGHT: return -gravityAcceleration.y;
-                case DeviceOrientation.STATE.FLAT: return -gravityAcceleration.x;
+                case DeviceOrientation.STATE.PORTRAIT: return -GravityAcceleration.x;
+                case DeviceOrientation.STATE.LEFT: return GravityAcceleration.y;
+                case DeviceOrientation.STATE.RIGHT: return -GravityAcceleration.y;
+                case DeviceOrientation.STATE.FLAT: return -GravityAcceleration.x;
                 default: return 0f;
             }
         }
@@ -46,10 +45,10 @@ namespace SwordGC.AirController.InputTypes
         {
             switch (state)
             {
-                case DeviceOrientation.STATE.PORTRAIT: return gravityAcceleration.z;
-                case DeviceOrientation.STATE.LEFT: return gravityAcceleration.z;
-                case DeviceOrientation.STATE.RIGHT: return gravityAcceleration.z;
-                case DeviceOrientation.STATE.FLAT: return -gravityAcceleration.y;
+                case DeviceOrientation.STATE.PORTRAIT: return GravityAcceleration.z;
+                case DeviceOrientation.STATE.LEFT: return GravityAcceleration.z;
+                case DeviceOrientation.STATE.RIGHT: return GravityAcceleration.z;
+                case DeviceOrientation.STATE.FLAT: return -GravityAcceleration.y;
                 default: return 0f;
             }
         }

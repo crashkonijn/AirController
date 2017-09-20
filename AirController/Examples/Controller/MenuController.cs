@@ -169,11 +169,11 @@ namespace SwordGC.AirController.Examples.Controller
 
         void CheckMotionInput (Player p)
         {
-            string text = p.Input.Orientation.state.ToString() + "\n\n";
+            string text = p.Input.Orientation.State.ToString() + "\n\n";
 
-            text += "Roll " + p.Input.Motion.GetRoll(p.Input.Orientation.state) + "\n\n";
+            text += "Roll " + p.Input.Motion.GetRoll(p.Input.Orientation.State) + "\n\n";
 
-            text += "Tilt " + p.Input.Motion.GetTilt(p.Input.Orientation.state) + "\n\n";
+            text += "Tilt " + p.Input.Motion.GetTilt(p.Input.Orientation.State) + "\n\n";
 
             motionText.text = text;
         }

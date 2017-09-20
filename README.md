@@ -33,6 +33,8 @@ Unity:
 * Auto profile picture loading
 * Auto orientation detection
 * Orientation based roll/tilt
+* Auto handling of savedata
+* Send custom data to the controller
 
 ---
 
@@ -176,6 +178,12 @@ public void UpdateDeviceStates() {}
 // Resets the input, is called on LateUpdate
 public void ResetInput() {}
 
+// Saves the savedata of all devices
+public void SaveData (){}
+
+// Saves the savedata of a device
+public void SaveData (Device device){}
+
 ```
 
 ## Player
@@ -264,6 +272,9 @@ public class ExampleDevice : Device {
 // Reference to the input of this device
 public Input Input { get; protected set; }
 
+// Reference to the save data of this device
+public SaveData SaveData { get; private set; }
+
 // Set to true when this specific device is here
 private bool isHero;
 
@@ -330,6 +341,106 @@ public bool GetKeyDown (string key) {}
 // True if the button was released this frame.
 // Note: Only works for "hold" buttons
 public bool GetKeyUp (string key) {}
+```
+
+### DeviceMotion
+
+```C#
+// Holds the acceleration of this device, including gravity
+public Vector3 GravityAcceleration { get; private set; }
+
+// Returns the roll compared to the desired state
+public float GetRoll(DeviceOrientation.STATE state){}
+
+// Returns the tilt compared to the desired state
+public float GetTilt(DeviceOrientation.STATE state){}
+```
+
+### DeviceOrientation
+
+```C#
+// The current state: UNKNOWN, FLAT, PORTRAIT, LEFT, RIGHT
+public STATE State { get; private set; }
+
+// The raw data
+public float Alpha { get; private set; }
+public float Beta { get; private set; }
+public float Gamma { get; private set; }
+
+// Wrappers
+public float X { get { return Beta; } }
+public float Y { get { return Alpha; } }
+public float Z { get { return Gamma; } }
+
+// Returns the euler angles base on the data
+public Vector3 EulerAngles
+
+```
+### TouchPan (Drag)
+```
+// The position (in screen pixels) when the event started
+public Vector2 StartPosition { get; private set; }
+
+// The current position (in screen pixels)
+public Vector2 CurrentPosition { get; private set; }
+
+// Returns true on the first frame of this event
+public bool IsTouchStart { get; }
+
+// Returns true during all frames of this event
+public bool IsTouching { get; }
+
+// Returns true on the last frame of this event
+public bool IsTouchEnd { get; }
+
+// Calls the input action when IsTouchStart
+public void TouchStart (Action<Vector2> callback){}
+
+// Calls the input action when IsTouching
+public void Touching (Action<Vector2, Vector2> callback){}
+
+// Calls the input action when IsTouchEnd
+public void TouchEnd (Action<Vector2, Vector2> callback) {}
+```
+### TouchSwipe
+```C#
+// The direction of the last event
+public DIRECTION Direction { get; private set; }
+
+// True if there was a swipe event this frame
+public bool IsSwiped { get; }
+
+// The callback gets called when a swipe event happens
+public void Swiped (Action<DIRECTION> callback){}
+
+// The callback gets called when a swipe up event happens
+public void SwipedUp (Action callback){}
+
+// The callback gets called when a swipe down event happens
+public void SwipedDown(Action callback){} 
+
+// The callback gets called when a swipe left event happens
+public void SwipedLeft(Action callback){}
+
+// The callback gets called when a swipe right event happens
+public void SwipedRight(Action callback){}
+```
+
+## SaveData
+
+### Functions
+```C#
+// Sets an int to the savedata
+public void SetInt (string key, int i){}
+
+// Returns an int from the savedata, returns the defaultValue when there's none
+public int GetInt (string key, int defaultValue = 0){}
+
+// Sets a string to the savedata
+public void SetString(string key, string s){}
+
+// Returns a string from the savedata, returns the defaultValue when there's none
+public string GetString (string key, string defaultValue = ""){}
 ```
 
 # AirController (HTML/JS)
@@ -478,10 +589,4 @@ controller.onBecameHero = function () {};
 This example will output this:
 
 ![Rendered version of above example](http://i.imgur.com/snqW4YY.png)
-
-
-
-
-
-
 

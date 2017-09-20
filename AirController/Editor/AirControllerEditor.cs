@@ -135,12 +135,12 @@ namespace SwordGC.AirController
 
             if (ShouldShowInput("motion", device))
             {
-                EditorGUILayout.LabelField("State: ", device.Input.Orientation.state.ToString());
+                EditorGUILayout.LabelField("State: ", device.Input.Orientation.State.ToString());
                 EditorGUILayout.LabelField("Orientation: ", device.Input.Orientation.EulerAngles.ToString());
                 //EditorGUILayout.LabelField("Orientation: ", "(" + Mathf.RoundToInt(device.Input.orientation.EulerAngles.x / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.y / 90) + ", " + Mathf.RoundToInt(device.Input.orientation.EulerAngles.z / 90) + ")");
-                EditorGUILayout.LabelField("Motion: ", device.Input.Motion.gravityAcceleration.ToString());
-                EditorGUILayout.LabelField("Roll: ", device.Input.Motion.GetRoll(device.Input.Orientation.state).ToString());
-                EditorGUILayout.LabelField("Tilt: ", device.Input.Motion.GetTilt(device.Input.Orientation.state).ToString());
+                EditorGUILayout.LabelField("Motion: ", device.Input.Motion.GravityAcceleration.ToString());
+                EditorGUILayout.LabelField("Roll: ", device.Input.Motion.GetRoll(device.Input.Orientation.State).ToString());
+                EditorGUILayout.LabelField("Tilt: ", device.Input.Motion.GetTilt(device.Input.Orientation.State).ToString());
             }
 
             SetShowInput("savedata", device, EditorGUILayout.Foldout(ShouldShowInput("savedata", device), "Save Data"));
