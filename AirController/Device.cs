@@ -112,24 +112,12 @@ namespace SwordGC.AirController
         /// <summary>
         /// Should return the current view of the controller
         /// </summary>
-        public virtual string View
-        {
-            get
-            {
-                return "Menu";
-            }
-        }
+        public virtual string View { get; set; }
 
         /// <summary>
         /// Should return the classes that should be inserted on the controller
         /// </summary>
-        public virtual string Classes
-        {
-            get
-            {
-                return "";
-            }
-        }
+        public virtual string Classes { get; set; }
 
         /// <summary>
         /// Returns the classes that are used internally
