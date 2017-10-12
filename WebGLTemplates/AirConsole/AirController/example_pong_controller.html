@@ -1,0 +1,61 @@
+
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="AirController/css/AirController.css">
+    <style>
+        body {
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 30px;
+        }
+        h1 {
+            text-align: center;
+            vertical-align: middle;
+            line-height: 100vh;
+            font-size: 30px;
+        }
+        .player0 #Gameplay {
+            background-color: #cbff50
+        }
+        .player1 #Gameplay {
+            background-color: #ff6775
+        }
+        .btn-50 .btn {
+            float: left;
+            width: 100vw;
+            height: 50vh;
+            line-height: 50vh;
+        }
+    </style>
+</head>
+<body class="">
+    <div id="Loading" air-page="Loading" class="page">
+        <h1>Loading</h1>
+    </div>
+    <div id="Waiting" air-page="Waiting" class="page">
+        <h1>Waiting for other player</h1>
+    </div>
+    <div id="Gameplay" air-page="Gameplay" class="page btn-50">
+        <div id="gameplay_up" air-hold-btn="up" class="btn lime">Up</div>
+        <div id="gameplay_down" air-hold-btn="down" class="btn red">Down</div>
+    </div>
+    <div id="Full" air-page="Full" class="page">
+        <h1>All players claimed</h1>
+    </div>
+
+    <script type="text/javascript" src="https://www.airconsole.com/api/airconsole-latest.js"></script>
+    <script src="AirController/js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="AirController/js/hammer.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="AirController/js/AirController.js"></script>
+
+    <script>
+        controller.init("Loading", AirConsole.ORIENTATION_PORTRAIT, true);
+
+        controller.onData = function (customData) { console.log("onData: "); console.log(customData); };
+        controller.onShowPage = function (newPage) { console.log("onShowPage "); console.log(newPage); };
+        controller.onBecameHero = function () {};
+    </script>
+</body>
+</html>
