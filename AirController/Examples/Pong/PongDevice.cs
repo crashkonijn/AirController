@@ -13,11 +13,40 @@ namespace SwordGC.AirController.Examples.Pong
            
         }
 
+        public override string Classes
+        {
+            get
+            {
+                if (HasPlayer)
+                {
+                    return "player" + PlayerId;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
         public override string View
         {
             get
             {
-                return "Loading";
+                if (HasPlayer)
+                {
+                    if (airController.PlayersAvailable == 0)
+                    {
+                        return "Gameplay";
+                    }
+                    else
+                    {
+                        return "Waiting";
+                    }
+                }
+                else
+                {
+                    return "Full";
+                }
             }
         }
     }

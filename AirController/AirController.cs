@@ -249,7 +249,7 @@ namespace SwordGC.AirController
         public virtual void OnPlayerClaimed (Player player)
         {
             InternalDebug("OnPlayerClaimed: " + player.PlayerId);
-            onPlayerClaimed(player);
+            if (onPlayerClaimed != null) onPlayerClaimed(player);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace SwordGC.AirController
         public virtual void OnPlayerUnclaimed (Player player)
         {
             InternalDebug("OnPlayerUnClaimed: " + player.PlayerId);
-            onPlayerUnclaimed(player);
+            if (onPlayerUnclaimed != null) onPlayerUnclaimed(player);
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceConnected (Device device)
         {
             InternalDebug("OnDeviceConnected: " + device.DeviceId);
-            onDeviceConnected(device);
+            if(onDeviceConnected != null) onDeviceConnected(device);
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceDisconnected (Device device)
         {
             InternalDebug("OnDeviceDisconnected: " + device.DeviceId);
-            onDeviceDisconnected(device);
+            if (onDeviceDisconnected != null) onDeviceDisconnected(device);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceReconnected (Device device)
         {
             InternalDebug("OnDeviceReconnected: " + device.DeviceId);
-            onDeviceReconnected(device);
+            if (onDeviceReconnected != null) onDeviceReconnected(device);
         }
         #endregion
 

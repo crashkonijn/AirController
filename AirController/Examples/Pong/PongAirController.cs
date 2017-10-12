@@ -9,11 +9,6 @@ namespace SwordGC.AirController.Examples.Pong
     public class PongAirController : AirController
     {
 
-        public override Player GetNewPlayer(int playerId)
-        {
-            return new PongPlayer(playerId);
-        }
-
         protected override Device GetNewDevice(int deviceId)
         {
             return new PongDevice(deviceId);
