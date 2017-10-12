@@ -75,7 +75,7 @@ foreach (Player p in AirController.Instance.Players.Values) {
 To create pages/views the most basic example is this:
 
 HTML:
-```
+```HTML
 <div id="menu" air-page="Menu" class="page">
 	<!-- page content -->
 </div>
@@ -84,7 +84,7 @@ HTML:
 </div>
 ```
 Unity:
-```
+```C#
 foreach (Player p in AirController.Instance.Players.Values) {
     p.Device.View = "Menu";
 }
@@ -122,3 +122,7 @@ MaxPlayersMode: Auto
 ```
 
 ![Same number of players and devices](https://i.imgur.com/LvM12Lm.png)
+
+## Docs
+A more in depth explanation of everything can be found in the [wiki](https://github.com/crashkonijn/AirController/wiki/AirController-(Unity))
+

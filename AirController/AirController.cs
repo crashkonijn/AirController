@@ -9,6 +9,15 @@ namespace SwordGC.AirController
 {
     public class AirController : MonoBehaviour
     {
+        public delegate void OnPlayerCallback(Player player);
+        public delegate void OnDeviceCallback(Device device);
+
+        public event OnPlayerCallback onPlayerClaimed;
+        public event OnPlayerCallback onPlayerUnclaimed;
+        public event OnDeviceCallback onDeviceConnected;
+        public event OnDeviceCallback onDeviceDisconnected;
+        public event OnDeviceCallback onDeviceReconnected;
+
         /// <summary>
         /// Because we really do want one instance
         /// </summary>
@@ -240,6 +249,7 @@ namespace SwordGC.AirController
         public virtual void OnPlayerClaimed (Player player)
         {
             InternalDebug("OnPlayerClaimed: " + player.PlayerId);
+            onPlayerClaimed(player);
         }
 
         /// <summary>
@@ -248,6 +258,7 @@ namespace SwordGC.AirController
         public virtual void OnPlayerUnclaimed (Player player)
         {
             InternalDebug("OnPlayerUnClaimed: " + player.PlayerId);
+            onPlayerUnclaimed(player);
         }
 
         /// <summary>
@@ -256,6 +267,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceConnected (Device device)
         {
             InternalDebug("OnDeviceConnected: " + device.DeviceId);
+            onDeviceConnected(device);
         }
 
         /// <summary>
@@ -264,6 +276,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceDisconnected (Device device)
         {
             InternalDebug("OnDeviceDisconnected: " + device.DeviceId);
+            onDeviceDisconnected(device);
         }
 
         /// <summary>
@@ -272,6 +285,7 @@ namespace SwordGC.AirController
         public virtual void OnDeviceReconnected (Device device)
         {
             InternalDebug("OnDeviceReconnected: " + device.DeviceId);
+            onDeviceReconnected(device);
         }
         #endregion
 
