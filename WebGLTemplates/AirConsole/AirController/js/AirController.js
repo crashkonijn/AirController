@@ -255,6 +255,7 @@ var Page = function Page(elementId, parent) {
     }
 
     this.show = function show() {
+        //console.log("showing page: " + this.elementId);
         // actually hide the page
         document.getElementById(this.elementId).style.display = 'block';
         // unregister events
@@ -262,10 +263,18 @@ var Page = function Page(elementId, parent) {
     }
 
     this.hide = function hide() {
+        //console.log("Hiding page: " + this.elementId);
         // actually show the page
         document.getElementById(this.elementId).style.display = 'none';
         // register events
         this.unregister();
+    }
+
+    this.updateData = function updateData () {
+        var dataObjects = document.getElementById(this.elementId).querySelectorAll("[air-data]");
+        for (var i = 0; i < dataObjects.length; i++) {
+            dataObjects[i].innerHTML = parent.customData[dataObjects[i].getAttribute("air-data")];
+        }
     }
 
     // a callback for this page
@@ -420,6 +429,8 @@ var Sender = function Sender() {
 
                         controller.customData = obj[this.device_id].customdata;
                         controller.onData(obj[this.device_id].customdata);
+
+                        controller.currentPage.updateData();
 
                         document.body.className = "P" + (obj[this.device_id].playerId + 1) + " " + obj[this.device_id].class + " " + obj[this.device_id].color;
                     }
