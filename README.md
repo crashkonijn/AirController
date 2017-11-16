@@ -36,6 +36,11 @@ Unity:
 * Auto handling of savedata
 * Send custom data to the controller
 
+# Hall of Fame
+
+These games are powered by AirController:
+
+[The Underground King](https://www.airconsole.com/play/the-underground-king)
 
 # Usage
 
