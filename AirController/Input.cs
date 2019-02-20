@@ -199,8 +199,8 @@ namespace SwordGC.AirController
             {
                 Vector2 v = new Vector2();
 
-                v.x = json["x"].f / 50f;
-                v.y = json["y"].f / 50f * -1f;
+                v.x = json["x"].f;
+                v.y = json["y"].f * -1;
 
                 return v;
             }

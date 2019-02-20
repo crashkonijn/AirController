@@ -22,7 +22,7 @@ namespace SwordGC.AirController.InputTypes
         {
             get
             {
-                return new Vector3(Beta, Alpha, Gamma);
+                return new Vector3(Beta, Alpha, Gamma) * -1;
             }
         }
 

@@ -12,6 +12,9 @@ namespace SwordGC.AirController.Examples.Controller
         public STATE state = STATE.MENU;
         public STATE prevState = STATE.MENU;
 
+        [Header("General info")]
+        public Text generalText;
+
         [Header("Menu variables")]
         public CanvasGroup menuCanvas;
 
@@ -34,13 +37,7 @@ namespace SwordGC.AirController.Examples.Controller
         [Header("Motion variables")]
         public CanvasGroup motionCanvas;
         public Text motionText;
-
-        [Header("Shake variables")]
-        public CanvasGroup shakeCanvas;
-
-        [Header("Joystick variables")]
-        public CanvasGroup joystickCanvas;
-        public RectTransform joystickImage;
+        public GameObject phone;
 
         [Header("Profile variables")]
         public CanvasGroup profileCanvas;
@@ -56,7 +53,25 @@ namespace SwordGC.AirController.Examples.Controller
 
         void Update()
         {
-            CheckInput();
+            if (AirController.Instance.IsReady)
+            {
+                CheckInput();
+                UpdateGeneralText();
+            }
+        }
+
+        void UpdateGeneralText()
+        {
+            string text = "Devices connected: " + AirController.Instance.Devices.Count;
+
+            activePlayer = AirController.Instance.Players.Values.ToList()[0];
+
+            if (activePlayer.state == Player.STATE.CLAIMED)
+            {
+                text += "\n\nPlayer claimed by: " + AirController.Instance.Players.Values.ToList()[0].Nickname;
+            }
+
+            generalText.text = text;
         }
 
         void CheckInput ()
@@ -88,12 +103,6 @@ namespace SwordGC.AirController.Examples.Controller
                 case STATE.MOTION:
                     CheckMotionInput(activePlayer);
                     break;
-                case STATE.SHAKE:
-                    CheckShakeInput(activePlayer);
-                    break;
-                case STATE.JOYSTICK:
-                    CheckJoystickInput(activePlayer);
-                    break;
                 case STATE.PROFILE:
                     CheckProfileInput(activePlayer);
                     break;
@@ -122,12 +131,6 @@ namespace SwordGC.AirController.Examples.Controller
                         break;
                     case 3:
                         SwitchState(STATE.MOTION);
-                        break;
-                    case 4:
-                        SwitchState(STATE.SHAKE);
-                        break;
-                    case 5:
-                        SwitchState(STATE.JOYSTICK);
                         break;
                     case 6:
                         SwitchState(STATE.PROFILE);
@@ -162,7 +165,16 @@ namespace SwordGC.AirController.Examples.Controller
             p.Input.Pan.Touching((Vector2 start, Vector2 cur) => {
                 panImage.localPosition = Vector2.Lerp(panImage.localPosition, (cur - start) * 100f, Time.deltaTime * 5f);
             });
+
             p.Input.Pan.TouchEnd((Vector2 start, Vector2 cur) => {
+                GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cube.transform.position = new Vector3(cur.x, cur.y, -1f);
+                DestroyImmediate(cube.GetComponent<BoxCollider>());
+
+                Rigidbody2D rb2d = cube.AddComponent<Rigidbody2D>();
+                Debug.Log(rb2d);
+                rb2d.AddForce((Vector2.zero - cur).normalized * Mathf.Max(Vector2.Distance(Vector2.zero, cur) * 200f, 50f));
+
                 panImage.localPosition = Vector2.zero;
             });
         }
@@ -176,16 +188,9 @@ namespace SwordGC.AirController.Examples.Controller
             text += "Tilt " + p.Input.Motion.GetTilt(p.Input.Orientation.State) + "\n\n";
 
             motionText.text = text;
-        }
 
-        void CheckShakeInput (Player p)
-        {
-
-        }
-
-        void CheckJoystickInput (Player p)
-        {
-            joystickImage.localPosition = Vector2.Lerp(joystickImage.localPosition, p.Input.GetVector("movement") * 100f, 0.2f);
+            phone.SetActive(true);
+            phone.transform.eulerAngles = p.Input.Orientation.EulerAngles;
         }
 
         void CheckProfileInput (Player p)
@@ -202,6 +207,8 @@ namespace SwordGC.AirController.Examples.Controller
             state = newState;
             GetCanvas(state).alpha = 1f;
 
+            phone.SetActive(false);
+
             AirController.Instance.UpdateDeviceStates();
         }
 
@@ -213,9 +220,7 @@ namespace SwordGC.AirController.Examples.Controller
                 case STATE.BUTTONS: return buttonsCanvas;
                 case STATE.SWIPE: return swipeCanvas;
                 case STATE.PAN: return panCanvas;
-                case STATE.SHAKE: return shakeCanvas;
                 case STATE.MOTION: return motionCanvas;
-                case STATE.JOYSTICK: return joystickCanvas;
                 case STATE.PROFILE: return profileCanvas;
                 default: return null;
             }

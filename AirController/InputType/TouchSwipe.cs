@@ -41,8 +41,6 @@ namespace SwordGC.AirController.InputTypes
                 }
             }
             active = true;
-
-            Debug.Log("SWIPE: " + Direction);
         }
 
         public void Update()

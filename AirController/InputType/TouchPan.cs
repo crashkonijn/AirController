@@ -51,7 +51,7 @@ namespace SwordGC.AirController.InputTypes
         {
             if (data["value"].HasField("vector"))
             {
-                Vector2 v = Input.VectorFromJSON(data["value"]["vector"]);
+                Vector2 v = Input.VectorFromJSON(data["value"]["vector"]) * data["value"]["length"].f;
 
                 if (!IsTouching)
                 {
