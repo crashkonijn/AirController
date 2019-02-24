@@ -14,7 +14,7 @@ To prevent this from happening and to keep all logic in the same place the contr
 
 Controller:
 * Easy HTML setup, no javascript required. 
-* Out of the box support for buttons, buttons with int values and joysticks
+* Out of the box support for buttons, buttons with int values, pan, swipe and tilt/orientation.
 * Handles different screens, controlled by the Unity part.
 * Handles hero users, can disable hero only buttons automatically. It will show the become hero screen if a non-hero pushes it.
 * Smart sending of input, to minimize player input delay.
