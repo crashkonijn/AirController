@@ -41,7 +41,7 @@ namespace SwordGC.AirController.InputTypes
 
             if (type == TYPE.TAP)
             {
-                cooldown -= Time.deltaTime;
+                cooldown -= Time.unscaledDeltaTime;
                 active = false;
             }
         }
