@@ -8,7 +8,7 @@ namespace SwordGC.AirController.Examples.Controller
 {
     public class MenuController : MonoBehaviour
     {
-        public enum STATE { MENU, BUTTONS, SWIPE, PAN, MOTION, SHAKE, JOYSTICK, PROFILE }
+        public enum STATE { MENU, BUTTONS, SWIPE, PAN, MOTION, SHAKE, CUSTOM_DATA, AXIS, JOYSTICK, PROFILE }
         public STATE state = STATE.MENU;
         public STATE prevState = STATE.MENU;
 
@@ -39,10 +39,17 @@ namespace SwordGC.AirController.Examples.Controller
         public Text motionText;
         public GameObject phone;
 
+        [Header("Custom data variables")]
+        public CanvasGroup customDataCanvas;
+
         [Header("Profile variables")]
         public CanvasGroup profileCanvas;
         public RawImage profileImage;
         public Text profileText;
+
+        [Header("Axis")]
+        public CanvasGroup axisCanvas;
+        public Transform axisImage;
 
         Player activePlayer;
 
@@ -106,6 +113,10 @@ namespace SwordGC.AirController.Examples.Controller
                 case STATE.PROFILE:
                     CheckProfileInput(activePlayer);
                     break;
+                case STATE.AXIS:
+                case STATE.JOYSTICK:
+                    ChecAxisInput(activePlayer);
+                    break;
             }
         }
 
@@ -116,6 +127,8 @@ namespace SwordGC.AirController.Examples.Controller
 
         void CheckMenuInput (Player p)
         {
+            Debug.Log(p.Input.GetKeyValue("menu"));
+
             if(p.Input.GetKeyDown("menu"))
             {
                 switch (p.Input.GetKeyValue("menu"))
@@ -132,8 +145,17 @@ namespace SwordGC.AirController.Examples.Controller
                     case 3:
                         SwitchState(STATE.MOTION);
                         break;
+                    case 4:
+                        SwitchState(STATE.CUSTOM_DATA);
+                        break;
+                    case 5:
+                        SwitchState(STATE.AXIS);
+                        break;
                     case 6:
                         SwitchState(STATE.PROFILE);
+                        break;
+                    case 7:
+                        SwitchState(STATE.JOYSTICK);
                         break;
                 }
             }
@@ -193,6 +215,11 @@ namespace SwordGC.AirController.Examples.Controller
             phone.transform.eulerAngles = p.Input.Orientation.EulerAngles;
         }
 
+        void ChecAxisInput(Player p)
+        {
+            axisImage.localPosition = Vector2.Lerp(axisImage.localPosition, p.Input.GetVector("move") * 100f, 0.2f);
+        }
+
         void CheckProfileInput (Player p)
         {
             profileImage.texture = p.ProfilePicture;
@@ -214,6 +241,8 @@ namespace SwordGC.AirController.Examples.Controller
 
         CanvasGroup GetCanvas(STATE state)
         {
+            Debug.Log("Switch state to: " + state);
+
             switch (state)
             {
                 case STATE.MENU: return menuCanvas;
@@ -221,8 +250,21 @@ namespace SwordGC.AirController.Examples.Controller
                 case STATE.SWIPE: return swipeCanvas;
                 case STATE.PAN: return panCanvas;
                 case STATE.MOTION: return motionCanvas;
+                case STATE.CUSTOM_DATA: return customDataCanvas;
                 case STATE.PROFILE: return profileCanvas;
+                case STATE.AXIS:
+                case STATE.JOYSTICK:
+                    return axisCanvas;
                 default: return null;
+            }
+        }
+
+        public void OnCustomDataUpdate(string text)
+        {
+            if (activePlayer != null)
+            {
+                activePlayer.Device.SetData("text", text);
+                AirController.Instance.UpdateDeviceStates();
             }
         }
     }

@@ -12,6 +12,7 @@ namespace SwordGC.AirController.InputTypes
 
         public bool active = false;
         public bool prevActive = false;
+
         public int value;
         public float cooldown;
 

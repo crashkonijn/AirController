@@ -131,30 +131,29 @@ namespace SwordGC.AirController
         }
 
         /// <summary>
-        /// Returns the axis of an object
-        /// 
-        /// Example: The controller holds a joystick called Movement
-        /// GetAxis("MovementHorizontal") will return the x value of movement
+        /// Returns the x axis of an input vector
         /// </summary>
-        public float GetAxis (string key)
+        public float GetHorizontalAxis (string key)
         {
             key = key.ToLower();
 
-            if (key.Contains("horizontal"))
+            if (Axis.ContainsKey(key))
             {
-                key = key.Replace("horizontal", "");
-                if (Axis.ContainsKey(key))
-                {
-                    return Axis[key].x;
-                }
+                return Axis[key].x;
             }
-            else if (key.Contains("vertical"))
+            return 0f;
+        }
+
+        /// <summary>
+        /// Returns the y axis of an input vector
+        /// </summary>
+        public float GetVerticalAxis(string key)
+        {
+            key = key.ToLower();
+
+            if (Axis.ContainsKey(key))
             {
-                key = key.Replace("vertical", "");
-                if (Axis.ContainsKey(key))
-                {
-                    return Axis[key].x;
-                }
+                return Axis[key].y;
             }
             return 0f;
         }
@@ -200,7 +199,7 @@ namespace SwordGC.AirController
                 Vector2 v = new Vector2();
 
                 v.x = json["x"].f;
-                v.y = json["y"].f * -1;
+                v.y = json["y"].f;
 
                 return v;
             }

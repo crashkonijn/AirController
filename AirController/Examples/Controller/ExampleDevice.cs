@@ -20,24 +20,26 @@ namespace SwordGC.AirController.Examples.Controller
             {
                 if (airController.PlayersAvailable == 1)
                 {
-                    return "Claim";
+                    return "claim";
                 }
                 else if(PlayerId != 0)
                 {
-                    return "Full";
+                    return "full";
                 }
                 else
                 {
                     switch (menu.state)
                     {
-                        case MenuController.STATE.MENU: return "Menu";
-                        case MenuController.STATE.BUTTONS: return "Buttons";
-                        case MenuController.STATE.SWIPE: return "Swipe";
-                        case MenuController.STATE.PAN: return "Pan";
-                        case MenuController.STATE.MOTION: return "Motion";
-                        case MenuController.STATE.JOYSTICK: return "Joystick";
-                        case MenuController.STATE.PROFILE: return "Profile";
-                        default: return "Loading";
+                        case MenuController.STATE.MENU: return "menu";
+                        case MenuController.STATE.BUTTONS: return "buttons";
+                        case MenuController.STATE.SWIPE: return "swipe";
+                        case MenuController.STATE.PAN: return "pan";
+                        case MenuController.STATE.MOTION: return "motion";
+                        case MenuController.STATE.CUSTOM_DATA: return "custom-data";
+                        case MenuController.STATE.PROFILE: return "profile";
+                        case MenuController.STATE.AXIS: return "axis";
+                        case MenuController.STATE.JOYSTICK: return "joystick";
+                        default: return "loading";
                     }
                 }
             }
