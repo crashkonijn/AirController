@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SwordGC.AirController.InputTypes
+﻿namespace SwordGC.AirController.InputTypes
 {
     interface IInput
     {

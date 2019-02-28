@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +17,7 @@ namespace SwordGC.AirController.Examples.Controller
         public CanvasGroup menuCanvas;
 
         [Header("Button variables")]
-        public CanvasGroup buttonsCanvas; 
+        public CanvasGroup buttonsCanvas;
         public Image buttonsTap;
         public Image buttonsHold;
         public Image buttonsNumber;
@@ -81,9 +79,12 @@ namespace SwordGC.AirController.Examples.Controller
             generalText.text = text;
         }
 
-        void CheckInput ()
+        void CheckInput()
         {
-            if (AirController.Instance.Players.Count == 0) return;
+            if (AirController.Instance.Players.Count == 0)
+            {
+                return;
+            }
 
             activePlayer = AirController.Instance.Players.Values.ToList()[0];
 
@@ -120,16 +121,14 @@ namespace SwordGC.AirController.Examples.Controller
             }
         }
 
-        bool CheckBackButton (Player p)
+        bool CheckBackButton(Player p)
         {
             return p.Input.GetKeyDown("back");
         }
 
-        void CheckMenuInput (Player p)
+        void CheckMenuInput(Player p)
         {
-            Debug.Log(p.Input.GetKeyValue("menu"));
-
-            if(p.Input.GetKeyDown("menu"))
+            if (p.Input.GetKeyDown("menu"))
             {
                 switch (p.Input.GetKeyValue("menu"))
                 {
@@ -170,9 +169,10 @@ namespace SwordGC.AirController.Examples.Controller
             buttonsHero.color = p.Input.GetKeyDown("hero") ? Color.red : Color.Lerp(buttonsHero.color, Color.white, 0.2f);
         }
 
-        void CheckSwipeInput (Player p)
+        void CheckSwipeInput(Player p)
         {
-            p.Input.Swipe.Swiped((InputTypes.TouchSwipe.DIRECTION dir) => {
+            p.Input.Swipe.Swiped((InputTypes.TouchSwipe.DIRECTION dir) =>
+            {
                 swipeText.text = dir.ToString();
                 swipeText.color = new Vector4(1f, 1f, 1f, 1f);
                 swipeText.rectTransform.localScale = Vector2.one * 2f;
@@ -182,13 +182,15 @@ namespace SwordGC.AirController.Examples.Controller
             swipeText.rectTransform.localScale = Vector2.Lerp(swipeText.rectTransform.localScale, Vector2.one, Time.deltaTime * 5f);
         }
 
-        void CheckPanInput (Player p)
+        void CheckPanInput(Player p)
         {
-            p.Input.Pan.Touching((Vector2 start, Vector2 cur) => {
+            p.Input.Pan.Touching((Vector2 start, Vector2 cur) =>
+            {
                 panImage.localPosition = Vector2.Lerp(panImage.localPosition, (cur - start) * 100f, Time.deltaTime * 5f);
             });
 
-            p.Input.Pan.TouchEnd((Vector2 start, Vector2 cur) => {
+            p.Input.Pan.TouchEnd((Vector2 start, Vector2 cur) =>
+            {
                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = new Vector3(cur.x, cur.y, -1f);
                 DestroyImmediate(cube.GetComponent<BoxCollider>());
@@ -201,12 +203,11 @@ namespace SwordGC.AirController.Examples.Controller
             });
         }
 
-        void CheckMotionInput (Player p)
+        void CheckMotionInput(Player p)
         {
             string text = p.Input.Orientation.State.ToString() + "\n\n";
 
             text += "Roll " + p.Input.Motion.GetRoll(p.Input.Orientation.State) + "\n\n";
-
             text += "Tilt " + p.Input.Motion.GetTilt(p.Input.Orientation.State) + "\n\n";
 
             motionText.text = text;
@@ -220,16 +221,14 @@ namespace SwordGC.AirController.Examples.Controller
             axisImage.localPosition = Vector2.Lerp(axisImage.localPosition, p.Input.GetVector("move") * 100f, 0.2f);
         }
 
-        void CheckProfileInput (Player p)
+        void CheckProfileInput(Player p)
         {
             profileImage.texture = p.ProfilePicture;
             profileText.text = p.Nickname;
         }
 
-        void SwitchState (STATE newState)
+        void SwitchState(STATE newState)
         {
-            Debug.Log("Switch state to");
-
             GetCanvas(state).alpha = 0f;
             state = newState;
             GetCanvas(state).alpha = 1f;
@@ -241,8 +240,6 @@ namespace SwordGC.AirController.Examples.Controller
 
         CanvasGroup GetCanvas(STATE state)
         {
-            Debug.Log("Switch state to: " + state);
-
             switch (state)
             {
                 case STATE.MENU: return menuCanvas;

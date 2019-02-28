@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SwordGC.AirController
 {
@@ -42,7 +40,7 @@ namespace SwordGC.AirController
         /// The id of this player
         /// </summary>
         public int PlayerId { get; private set; }
-        
+
         /// <summary>
         /// The id of the connected device
         /// </summary>

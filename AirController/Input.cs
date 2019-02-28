@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
 using SwordGC.AirController.InputTypes;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ namespace SwordGC.AirController
         /// </summary>
         public Dictionary<string, Key> Keys { get; private set; }
 
-        public Input ()
+        public Input()
         {
             Axis = new Dictionary<string, Vector2>();
             Keys = new Dictionary<string, Key>();
@@ -37,7 +36,7 @@ namespace SwordGC.AirController
             Swipe = new TouchSwipe();
             Pan = new TouchPan();
         }
-        
+
         /// <summary>
         /// Processes the data
         /// </summary>
@@ -54,31 +53,40 @@ namespace SwordGC.AirController
                 if (type == "tap-button" || type == "hold-button")
                 {
                     GetKeyObject(key).HandleData(j);
+                    return;
                 }
-                else if(type == "vector")
+
+                if (type == "vector")
                 {
                     string lKey = key.ToLower();
+
                     if (!Axis.ContainsKey(lKey))
                     {
                         Axis.Add(lKey, VectorFromJSON(j["value"]));
+                        return;
                     }
-                    else
-                    {
-                        Axis[lKey] = VectorFromJSON(j["value"]);
-                    }
+
+                    Axis[lKey] = VectorFromJSON(j["value"]);
+                    return;
                 }
-                else if (type == "gyro")
+
+                if (type == "gyro")
                 {
                     Orientation.HandleData(j["value"]);
                     Motion.HandleData(j["value"]);
+                    return;
                 }
-                else if (type == "swipe")
+
+                if (type == "swipe")
                 {
                     Swipe.HandleData(j);
+                    return;
                 }
-                else if (type == "pan")
+
+                if (type == "pan")
                 {
                     Pan.HandleData(j);
+                    return;
                 }
             }
         }
@@ -101,7 +109,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns true if the button was pressed this frame
         /// </summary>
-        public bool GetKey (string key)
+        public bool GetKey(string key)
         {
             return GetKeyObject(key).active;
         }
@@ -109,7 +117,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns true if the button was pressed down this frame
         /// </summary>
-        public bool GetKeyDown (string key)
+        public bool GetKeyDown(string key)
         {
             return GetKeyObject(key).active && !GetKeyObject(key).prevActive;
         }
@@ -117,7 +125,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// True if the button was released this frame
         /// </summary>
-        public bool GetKeyUp (string key)
+        public bool GetKeyUp(string key)
         {
             return GetKeyObject(key).type == Key.TYPE.HOLD ? !GetKeyObject(key).active && GetKeyObject(key).prevActive : false;
         }
@@ -125,7 +133,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns the value of a given key
         /// </summary>
-        public int GetKeyValue (string key)
+        public int GetKeyValue(string key)
         {
             return GetKeyObject(key).value;
         }
@@ -133,7 +141,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns the x axis of an input vector
         /// </summary>
-        public float GetHorizontalAxis (string key)
+        public float GetHorizontalAxis(string key)
         {
             key = key.ToLower();
 
@@ -161,7 +169,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Returns the vector of a given key
         /// </summary>
-        public Vector2 GetVector (string key)
+        public Vector2 GetVector(string key)
         {
             key = key.ToLower();
 
@@ -192,7 +200,7 @@ namespace SwordGC.AirController
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static Vector2 VectorFromJSON (JSONObject json)
+        public static Vector2 VectorFromJSON(JSONObject json)
         {
             if (json.keys.Contains("x") && json.keys.Contains("y"))
             {
@@ -203,10 +211,8 @@ namespace SwordGC.AirController
 
                 return v;
             }
-            else
-            {
-                return Vector2.zero;
-            }
+
+            return Vector2.zero;
         }
     }
 }

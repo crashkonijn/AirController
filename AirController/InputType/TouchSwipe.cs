@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
 {
@@ -51,7 +48,7 @@ namespace SwordGC.AirController.InputTypes
         /// <summary>
         /// The callback gets called when a swipe event happens
         /// </summary>
-        public void Swiped (Action<DIRECTION> callback)
+        public void Swiped(Action<DIRECTION> callback)
         {
             if (IsSwiped)
             {
@@ -62,7 +59,7 @@ namespace SwordGC.AirController.InputTypes
         /// <summary>
         /// The callback gets called when a swipe up event happens
         /// </summary>
-        public void SwipedUp (Action callback)
+        public void SwipedUp(Action callback)
         {
             if (IsSwiped && Direction == DIRECTION.UP)
             {

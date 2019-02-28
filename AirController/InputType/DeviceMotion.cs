@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
 {
@@ -15,12 +12,14 @@ namespace SwordGC.AirController.InputTypes
         public void HandleData(JSONObject data)
         {
             if (data.keys.Contains("x") && data.keys.Contains("y") && data.keys.Contains("z"))
+            {
                 GravityAcceleration = new Vector3(data["x"].f, data["y"].f, data["z"].f);
+            }
         }
 
         public void Update()
         {
-            
+
         }
 
         /// <summary>
