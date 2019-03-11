@@ -13,6 +13,7 @@ namespace SwordGC.AirController
 
         public event OnPlayerCallback onPlayerClaimed;
         public event OnPlayerCallback onPlayerUnclaimed;
+        public event OnPlayerCallback onPlayerDisconnected;
         public event OnDeviceCallback onDeviceConnected;
         public event OnDeviceCallback onDeviceDisconnected;
         public event OnDeviceCallback onDeviceReconnected;
@@ -266,6 +267,18 @@ namespace SwordGC.AirController
             if (onPlayerUnclaimed != null)
             {
                 onPlayerUnclaimed(player);
+            }
+        }
+
+        /// <summary>
+        /// Is called when a player is disconnected
+        /// </summary>
+        public virtual void OnPlayerDisconnected(Player player)
+        {
+            InternalDebug("OnPlayerDisconnected: " + player.PlayerId);
+            if (onPlayerDisconnected != null)
+            {
+                onPlayerDisconnected(player);
             }
         }
 

@@ -7,7 +7,6 @@ namespace SwordGC.AirController.Examples.Pong
 {
     public class Logic : MonoBehaviour
     {
-
         public Racket leftRacket;
         public Racket rightRacket;
 
@@ -20,18 +19,20 @@ namespace SwordGC.AirController.Examples.Pong
         {
             leftRacket.player = AirController.Instance.GetPlayer(0);
             rightRacket.player = AirController.Instance.GetPlayer(1);
+
+            ui.text = string.Format("NEED {0} MORE PLAYERS", AirController.Instance.PlayersAvailable);
         }
 
         private void OnEnable()
         {
             AirController.Instance.onPlayerClaimed += OnPlayerClaimed;
-            AirController.Instance.onPlayerUnclaimed += OnPlayerUnclaimed;
+            AirController.Instance.onPlayerDisconnected += OnPlayerDisconnected;
         }
 
         private void OnDisable()
         {
             AirController.Instance.onPlayerClaimed -= OnPlayerClaimed;
-            AirController.Instance.onPlayerUnclaimed -= OnPlayerUnclaimed;
+            AirController.Instance.onPlayerDisconnected -= OnPlayerDisconnected;
         }
 
         private void OnPlayerClaimed (Player player)
@@ -40,10 +41,12 @@ namespace SwordGC.AirController.Examples.Pong
             {
                 StartGame();
             }
+            ui.text = string.Format("NEED {0} MORE PLAYERS", AirController.Instance.PlayersAvailable);
+
             AirController.Instance.UpdateDeviceStates();
         }
 
-        private void OnPlayerUnclaimed (Player player)
+        private void OnPlayerDisconnected (Player player)
         {
             if (AirController.Instance.PlayersAvailable != 0)
             {
@@ -76,11 +79,10 @@ namespace SwordGC.AirController.Examples.Pong
             {
                 Vector3 startDir = new Vector3(Random.Range(-1, 1f), Random.Range(-0.1f, 0.1f), 0);
                 ball.velocity = startDir.normalized * ballSpeed;
+                return;
             }
-            else
-            {
-                ball.velocity = Vector3.zero;
-            }
+
+            ball.velocity = Vector3.zero;
         }
 
         void UpdateScoreUI()

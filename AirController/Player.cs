@@ -111,6 +111,8 @@ namespace SwordGC.AirController
         public void Disconnect()
         {
             state = STATE.DISCONNECTED;
+
+            airController.OnPlayerDisconnected(this);
         }
         #endregion
     }
