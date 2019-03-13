@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -19,7 +17,7 @@ namespace SwordGC.AirController
         /// </summary>
         public Dictionary<string, string> StringStore { get; private set; }
 
-        public SaveData ()
+        public SaveData()
         {
             IntStore = new Dictionary<string, int>();
             StringStore = new Dictionary<string, string>();
@@ -28,18 +26,26 @@ namespace SwordGC.AirController
         /// <summary>
         /// Sets an int to the savedata
         /// </summary>
-        public void SetInt (string key, int i)
+        public void SetInt(string key, int i)
         {
-            if (!IntStore.ContainsKey(key)) IntStore.Add(key, i);
-            else IntStore[key] = i;
+            if (!IntStore.ContainsKey(key))
+            {
+                IntStore.Add(key, i);
+                return;
+            }
+
+            IntStore[key] = i;
         }
 
         /// <summary>
         /// Returns an int from the savedata, returns the defaultValue when there's none
         /// </summary>
-        public int GetInt (string key, int defaultValue = 0)
+        public int GetInt(string key, int defaultValue = 0)
         {
-            if (!IntStore.ContainsKey(key)) IntStore.Add(key, defaultValue);
+            if (!IntStore.ContainsKey(key))
+            {
+                IntStore.Add(key, defaultValue);
+            }
 
             return IntStore[key];
         }
@@ -49,16 +55,24 @@ namespace SwordGC.AirController
         /// </summary>
         public void SetString(string key, string s)
         {
-            if (!StringStore.ContainsKey(key)) StringStore.Add(key, s);
-            else StringStore[key] = s;
+            if (!StringStore.ContainsKey(key))
+            {
+                StringStore.Add(key, s);
+                return;
+            }
+
+            StringStore[key] = s;
         }
 
         /// <summary>
         /// Returns a string from the savedata, returns the defaultValue when there's none
         /// </summary>
-        public string GetString (string key, string defaultValue = "")
+        public string GetString(string key, string defaultValue = "")
         {
-            if (!StringStore.ContainsKey(key)) StringStore.Add(key, defaultValue);
+            if (!StringStore.ContainsKey(key))
+            {
+                StringStore.Add(key, defaultValue);
+            }
 
             return StringStore[key];
         }
@@ -66,7 +80,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Internal function to load data that's loaded by AirConsole
         /// </summary>
-        public void FromJSON (JSONObject data)
+        public void FromJSON(JSONObject data)
         {
             Debug.Log("Parsing savedata " + data.ToString());
 
@@ -96,7 +110,7 @@ namespace SwordGC.AirController
         /// Gets all data and converts it to a string
         /// </summary>
         /// <returns>The base64 encoded string of the savedata</returns>
-        public string ToJSON ()
+        public string ToJSON()
         {
             JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
 
@@ -121,7 +135,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Encodes a string to Base64
         /// </summary>
-        private string Encode (string encode)
+        private string Encode(string encode)
         {
             byte[] bytesToEncode = Encoding.UTF8.GetBytes(encode);
             return Convert.ToBase64String(bytesToEncode);
@@ -130,7 +144,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Decodes a string from Base64
         /// </summary>
-        private string Decode (string decode)
+        private string Decode(string decode)
         {
             byte[] decodedBytes = Convert.FromBase64String(decode);
             return Encoding.UTF8.GetString(decodedBytes);

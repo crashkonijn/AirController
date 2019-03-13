@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using NDream.AirConsole;
+﻿using NDream.AirConsole;
 using Newtonsoft.Json.Linq;
+using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
 
 namespace SwordGC.AirController
 {
@@ -14,6 +13,7 @@ namespace SwordGC.AirController
 
         public event OnPlayerCallback onPlayerClaimed;
         public event OnPlayerCallback onPlayerUnclaimed;
+        public event OnPlayerCallback onPlayerDisconnected;
         public event OnDeviceCallback onDeviceConnected;
         public event OnDeviceCallback onDeviceDisconnected;
         public event OnDeviceCallback onDeviceReconnected;
@@ -70,7 +70,7 @@ namespace SwordGC.AirController
         /// Set to true if the savedata needs to be loaded when a device connects
         /// </summary>
         public bool autoLoadSavedata = false;
-        
+
         /// <summary>
         /// Contains all players
         /// </summary>
@@ -86,7 +86,10 @@ namespace SwordGC.AirController
                 int i = 0;
                 foreach (Player p in Players.Values)
                 {
-                    if (p.state != Player.STATE.CLAIMED) i++;
+                    if (p.state != Player.STATE.CLAIMED)
+                    {
+                        i++;
+                    }
                 }
                 return i;
             }
@@ -217,7 +220,7 @@ namespace SwordGC.AirController
             UpdateDeviceStates();
         }
 
-        protected virtual void OnPersistentDataLoaded (JToken data)
+        protected virtual void OnPersistentDataLoaded(JToken data)
         {
             InternalDebug("OnPersistentDataLoaded: " + data.ToString());
 
@@ -236,7 +239,7 @@ namespace SwordGC.AirController
             }
         }
 
-        protected virtual void OnPersistentDataStored (string UID)
+        protected virtual void OnPersistentDataStored(string UID)
         {
             InternalDebug("OnPersistentDataStored: " + UID);
         }
@@ -246,46 +249,73 @@ namespace SwordGC.AirController
         /// <summary>
         /// Is called when a player is claimed
         /// </summary>
-        public virtual void OnPlayerClaimed (Player player)
+        public virtual void OnPlayerClaimed(Player player)
         {
             InternalDebug("OnPlayerClaimed: " + player.PlayerId);
-            if (onPlayerClaimed != null) onPlayerClaimed(player);
+            if (onPlayerClaimed != null)
+            {
+                onPlayerClaimed(player);
+            }
         }
 
         /// <summary>
         /// Is called when a player is unclaimed
         /// </summary>
-        public virtual void OnPlayerUnclaimed (Player player)
+        public virtual void OnPlayerUnclaimed(Player player)
         {
             InternalDebug("OnPlayerUnClaimed: " + player.PlayerId);
-            if (onPlayerUnclaimed != null) onPlayerUnclaimed(player);
+            if (onPlayerUnclaimed != null)
+            {
+                onPlayerUnclaimed(player);
+            }
+        }
+
+        /// <summary>
+        /// Is called when a player is disconnected
+        /// </summary>
+        public virtual void OnPlayerDisconnected(Player player)
+        {
+            InternalDebug("OnPlayerDisconnected: " + player.PlayerId);
+            if (onPlayerDisconnected != null)
+            {
+                onPlayerDisconnected(player);
+            }
         }
 
         /// <summary>
         /// Is called when a device is connected
         /// </summary>
-        public virtual void OnDeviceConnected (Device device)
+        public virtual void OnDeviceConnected(Device device)
         {
             InternalDebug("OnDeviceConnected: " + device.DeviceId);
-            if(onDeviceConnected != null) onDeviceConnected(device);
+            if (onDeviceConnected != null)
+            {
+                onDeviceConnected(device);
+            }
         }
 
         /// <summary>
         /// Is called when a device is disconnected
         /// </summary>
-        public virtual void OnDeviceDisconnected (Device device)
+        public virtual void OnDeviceDisconnected(Device device)
         {
             InternalDebug("OnDeviceDisconnected: " + device.DeviceId);
-            if (onDeviceDisconnected != null) onDeviceDisconnected(device);
+            if (onDeviceDisconnected != null)
+            {
+                onDeviceDisconnected(device);
+            }
         }
 
         /// <summary>
         /// Is called when a device is reconnected
         /// </summary>
-        public virtual void OnDeviceReconnected (Device device)
+        public virtual void OnDeviceReconnected(Device device)
         {
             InternalDebug("OnDeviceReconnected: " + device.DeviceId);
-            if (onDeviceReconnected != null) onDeviceReconnected(device);
+            if (onDeviceReconnected != null)
+            {
+                onDeviceReconnected(device);
+            }
         }
         #endregion
 
@@ -293,7 +323,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Called when a new player is needed, override this function to insert your own Player extended class
         /// </summary>
-        public virtual Player GetNewPlayer (int playerId)
+        public virtual Player GetNewPlayer(int playerId)
         {
             return new Player(playerId);
         }
@@ -309,7 +339,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Creates and adds a new player
         /// </summary>
-        private Player CreatePlayer (int playerId)
+        private Player CreatePlayer(int playerId)
         {
             Player p = GetNewPlayer(playerId);
             Players.Add(playerId, p);
@@ -338,7 +368,10 @@ namespace SwordGC.AirController
         /// </summary>
         public void ClaimPlayer(int deviceId)
         {
-            if (DeviceHasPlayer(deviceId)) return;
+            if (DeviceHasPlayer(deviceId))
+            {
+                return;
+            }
 
             // trying to find a fresh player to claim
             for (int i = 0; i < Players.Count; i++)
@@ -381,7 +414,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Unclaim a Player from a device
         /// </summary>
-        public void UnClaimPlayer (int deviceId)
+        public void UnClaimPlayer(int deviceId)
         {
             if (GetDevice(deviceId).HasPlayer)
             {
@@ -392,7 +425,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Tries to reconnect a Player to a device
         /// </summary>
-        public bool ReconnectWithPlayer (int deviceId)
+        public bool ReconnectWithPlayer(int deviceId)
         {
             // trying to find a player to reconnect
             for (int i = 0; i < Players.Count; i++)
@@ -413,28 +446,32 @@ namespace SwordGC.AirController
         /// <summary>
         /// Safe function to get a device
         /// </summary>
-        public virtual Device GetDevice (int deviceId)
+        public virtual Device GetDevice(int deviceId)
         {
             return Devices.ContainsKey(deviceId) ? Devices[deviceId] : null;
         }
-    
+
         /// <summary>
         /// Creates a device
         /// </summary>
         private void CreateDevice(int deviceId)
         {
-            if (!Devices.ContainsKey(deviceId)) Devices.Add(deviceId, GetNewDevice(deviceId));
+            if (!Devices.ContainsKey(deviceId))
+            {
+                Devices.Add(deviceId, GetNewDevice(deviceId));
+            }
+
             UpdateDeviceStates();
         }
 
         /// <summary>
         /// Called when a new device is needed, override this function to insert your own Device extended class
         /// </summary>
-        protected virtual Device GetNewDevice (int deviceId)
+        protected virtual Device GetNewDevice(int deviceId)
         {
             return new Device(deviceId);
         }
-        
+
         /// <summary>
         /// Checks if a device has a player object
         /// </summary>
@@ -442,7 +479,10 @@ namespace SwordGC.AirController
         {
             foreach (Player p in Players.Values)
             {
-                if (p.DeviceId == deviceId) return true;
+                if (p.DeviceId == deviceId)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -454,7 +494,10 @@ namespace SwordGC.AirController
         {
             foreach (Player p in Players.Values)
             {
-                if (p.DeviceId == deviceId) return p;
+                if (p.DeviceId == deviceId)
+                {
+                    return p;
+                }
             }
             return null;
         }
@@ -463,7 +506,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// (re)connects a device
         /// </summary>
-        private void ConnectDevice (int deviceId)
+        private void ConnectDevice(int deviceId)
         {
             // create device
             CreateDevice(deviceId);
@@ -486,7 +529,8 @@ namespace SwordGC.AirController
         /// </summary>
         private void DisconnectDevice(int deviceId)
         {
-            if (Devices.ContainsKey(deviceId)) {
+            if (Devices.ContainsKey(deviceId))
+            {
                 if (DeviceHasPlayer(deviceId) && GetDevice(deviceId).Player.state == Player.STATE.CLAIMED)
                 {
                     GetDevice(deviceId).Player.Disconnect();
@@ -543,7 +587,7 @@ namespace SwordGC.AirController
         /// <summary>
         /// Saves the savedata of all devices
         /// </summary>
-        public void SaveData ()
+        public void SaveData()
         {
             foreach (Device d in Devices.Values)
             {
@@ -555,7 +599,7 @@ namespace SwordGC.AirController
         /// Saves the savedata of a device
         /// </summary>
         /// <param name="device"></param>
-        public void SaveData (Device device)
+        public void SaveData(Device device)
         {
             AirConsole.instance.StorePersistentData("AirControllerData", new JValue(device.SaveData.ToJSON()), device.UID);
         }
@@ -563,14 +607,17 @@ namespace SwordGC.AirController
         /// <summary>
         /// Wrapper function for easy turning on and off debugging
         /// </summary>
-        protected void InternalDebug (object obj)
+        protected void InternalDebug(object obj)
         {
-            if(debug) Debug.Log("AirController: " + obj.ToString());
+            if (debug)
+            {
+                Debug.Log("AirController: " + obj.ToString());
+            }
         }
 
 #if UNITY_EDITOR
         [UnityEditor.MenuItem("GameObject/Create Other/AirController")]
-        static void MenuCreator ()
+        static void MenuCreator()
         {
             AirController AC = new GameObject("AirController").AddComponent<AirController>();
 

@@ -1,16 +1,11 @@
-﻿using SwordGC.AirController;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace SwordGC.AirController.Examples.Pong
+﻿namespace SwordGC.AirController.Examples.Pong
 {
     public class PongDevice : Device
     {
 
         public PongDevice(int deviceId) : base(deviceId)
         {
-           
+
         }
 
         public override string Classes
@@ -21,10 +16,8 @@ namespace SwordGC.AirController.Examples.Pong
                 {
                     return "player" + PlayerId;
                 }
-                else
-                {
-                    return "";
-                }
+
+                return "";
             }
         }
 
@@ -38,15 +31,11 @@ namespace SwordGC.AirController.Examples.Pong
                     {
                         return "Gameplay";
                     }
-                    else
-                    {
-                        return "Waiting";
-                    }
+
+                    return "Waiting";
                 }
-                else
-                {
-                    return "Full";
-                }
+
+                return "Full";
             }
         }
     }

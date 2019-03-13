@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using NDream.AirConsole;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 
 namespace SwordGC.AirController
 {
@@ -20,7 +21,12 @@ namespace SwordGC.AirController
 
             DrawSettings();
 
-            if (!EditorApplication.isPlaying) return;
+            if (!EditorApplication.isPlaying)
+            {
+                DrawExecutionOrder();
+
+                return;
+            };
 
             DrawStats();
 
@@ -32,7 +38,10 @@ namespace SwordGC.AirController
                 {
                     foreach (Player p in controller.Players.Values)
                     {
-                        if (p.state != Player.STATE.CLAIMED) DrawPlayer(p);
+                        if (p.state != Player.STATE.CLAIMED)
+                        {
+                            DrawPlayer(p);
+                        }
                     }
                 }
             }
@@ -49,6 +58,39 @@ namespace SwordGC.AirController
             EditorUtility.SetDirty(controller);
         }
 
+        private void DrawExecutionOrder()
+        {
+            if (ExecutionOrderCorrect())
+            {
+                return;
+            }
+
+            EditorGUILayout.LabelField("Execution order", EditorStyles.boldLabel);
+
+            EditorGUILayout.HelpBox("\nWARNING: script execution order incorrect. \n\nAirConsole should be executed before this script to avoid unexpected, random bugs. (Before Default Time as well)\n\nYou can change this in Edit -> Project Settings -> Script execution order.\n", MessageType.Error);
+        }
+
+        private bool ExecutionOrderCorrect()
+        {
+            int consoleOrder = GetExecutionOrder(typeof(AirConsole));
+            int controllerOrder = GetExecutionOrder(controller.GetType());
+
+            return consoleOrder < controllerOrder && controllerOrder < 0;
+        }
+
+        private int GetExecutionOrder(Type type)
+        {
+            foreach (MonoScript monoScript in MonoImporter.GetAllRuntimeMonoScripts())
+            {
+                if (monoScript.name == type.Name)
+                {
+                    return MonoImporter.GetExecutionOrder(monoScript);
+                }
+            }
+
+            return 0;
+        }
+
         private void DrawSettings()
         {
             EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
@@ -59,8 +101,10 @@ namespace SwordGC.AirController
             controller.joinMode = (AirController.JOINMODE)EditorGUILayout.EnumPopup("Join Mode", controller.joinMode);
             controller.maxPlayersMode = (AirController.MAXPLAYERSMODE)EditorGUILayout.EnumPopup("Max players mode", controller.maxPlayersMode);
 
-            if(controller.maxPlayersMode == AirController.MAXPLAYERSMODE.LIMITED)
+            if (controller.maxPlayersMode == AirController.MAXPLAYERSMODE.LIMITED)
+            {
                 controller.maxPlayers = EditorGUILayout.IntField("Max players", controller.maxPlayers);
+            }
 
             controller.debug = EditorGUILayout.Toggle("Debug", controller.debug);
             controller.autoLoadSavedata = EditorGUILayout.Toggle("Auto load savedata", controller.autoLoadSavedata);
@@ -68,13 +112,15 @@ namespace SwordGC.AirController
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawStats ()
+        private void DrawStats()
         {
             EditorGUILayout.LabelField("Stats", EditorStyles.boldLabel);
             EditorGUILayout.BeginVertical("Box");
 
             if (controller.heroMode == AirController.HEROMODE.TOGETHER)
+            {
                 EditorGUILayout.LabelField("Hero: ", "" + controller.HasHero, EditorStyles.boldLabel);
+            }
 
             EditorGUILayout.LabelField("Player objects: ", "" + controller.Players.Count, EditorStyles.boldLabel);
 
@@ -96,16 +142,22 @@ namespace SwordGC.AirController
             EditorGUILayout.LabelField("view: ", "" + device.View);
             EditorGUILayout.LabelField("classes: ", "" + device.Classes);
 
-            if (controller.heroMode == AirController.HEROMODE.SEPERATE) EditorGUILayout.LabelField("hero: ", "" + device.IsHero);
+            if (controller.heroMode == AirController.HEROMODE.SEPERATE)
+            {
+                EditorGUILayout.LabelField("hero: ", "" + device.IsHero);
+            }
 
             DrawInput(device);
 
-            if (device.PlayerId != -1) DrawPlayer(controller.GetPlayer(device.PlayerId));
+            if (device.PlayerId != -1)
+            {
+                DrawPlayer(controller.GetPlayer(device.PlayerId));
+            }
 
             EditorGUILayout.EndVertical();
         }
 
-        private void DrawInput (Device device)
+        private void DrawInput(Device device)
         {
             EditorGUILayout.BeginVertical("Box");
             SetShowInput("input", device, EditorGUILayout.Foldout(ShouldShowInput("input", device), "Input"));
@@ -174,28 +226,39 @@ namespace SwordGC.AirController
             EditorGUILayout.LabelField("Player " + player.PlayerId, EditorStyles.boldLabel);
 
             if (player.state != Player.STATE.CLAIMED)
-            EditorGUILayout.LabelField("state: ", "" + player.state);
+            {
+                EditorGUILayout.LabelField("state: ", "" + player.state);
+            }
 
             EditorGUILayout.EndVertical();
         }
 
-        private bool ShouldShowInput (string key, Device device)
+        private bool ShouldShowInput(string key, Device device)
         {
-            if (!GetSettings(key).ContainsKey(device)) showData[key].Add(device, false);
+            if (!GetSettings(key).ContainsKey(device))
+            {
+                showData[key].Add(device, false);
+            }
 
             return showData[key][device];
         }
 
-        private void SetShowInput (string key, Device device, bool value)
+        private void SetShowInput(string key, Device device, bool value)
         {
-            if (!GetSettings(key).ContainsKey(device)) showData[key].Add(device, false);
+            if (!GetSettings(key).ContainsKey(device))
+            {
+                showData[key].Add(device, false);
+            }
 
             showData[key][device] = value;
         }
 
         private Dictionary<Device, bool> GetSettings(string key)
         {
-            if (!showData.ContainsKey(key)) showData.Add(key, new Dictionary<Device, bool>());
+            if (!showData.ContainsKey(key))
+            {
+                showData.Add(key, new Dictionary<Device, bool>());
+            }
 
             return showData[key];
         }

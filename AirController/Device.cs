@@ -62,7 +62,10 @@ namespace SwordGC.AirController
             {
                 foreach (Player p in airController.Players.Values)
                 {
-                    if (p.DeviceId == DeviceId) return p.PlayerId;
+                    if (p.DeviceId == DeviceId)
+                    {
+                        return p.PlayerId;
+                    }
                 }
                 return -1;
             }
@@ -103,7 +106,9 @@ namespace SwordGC.AirController
             get
             {
                 if (AirController.Instance.IsReady && nickname == null)
+                {
                     nickname = AirConsole.instance.GetNickname(DeviceId);
+                }
 
                 return nickname == null ? "Guest" : nickname;
             }
@@ -149,8 +154,10 @@ namespace SwordGC.AirController
             Input = new Input();
             SaveData = new SaveData();
 
-            if(airController.autoLoadSavedata)
-                AirConsole.instance.RequestPersistentData(new List<string> { UID } );
+            if (airController.autoLoadSavedata)
+            {
+                AirConsole.instance.RequestPersistentData(new List<string> { UID });
+            }
 
             airController.StartCoroutine(LoadProfilePicture());
         }
@@ -181,16 +188,15 @@ namespace SwordGC.AirController
         /// <summary>
         /// Set's custom data that is sent to the controller
         /// </summary>
-        public void SetData (string key, string data)
+        public void SetData(string key, string data)
         {
             if (customData.ContainsKey(key))
             {
                 customData[key] = data;
+                return;
             }
-            else
-            {
-                customData.Add(key, data);
-            }
+
+            customData.Add(key, data);
         }
 
         /// <summary>

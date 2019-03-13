@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
 {
@@ -12,6 +9,7 @@ namespace SwordGC.AirController.InputTypes
 
         public bool active = false;
         public bool prevActive = false;
+
         public int value;
         public float cooldown;
 
@@ -20,17 +18,18 @@ namespace SwordGC.AirController.InputTypes
             if (data["type"].str == "tap-button")
             {
                 OnDown(int.Parse(data["value"].str != null ? data["value"].str : "0"), TYPE.TAP);
+                return;
             }
-            else if (data["type"].str == "hold-button")
+
+            if (data["type"].str == "hold-button")
             {
                 if (data["event"].str == "down")
                 {
                     OnDown(int.Parse(data["value"].str != null ? data["value"].str : "0"), TYPE.HOLD);
+                    return;
                 }
-                else
-                {
-                    OnUp();
-                }
+
+                OnUp();
             }
         }
 
@@ -47,7 +46,10 @@ namespace SwordGC.AirController.InputTypes
 
         private void OnDown(int value, TYPE type)
         {
-            if (cooldown > 0) return;
+            if (cooldown > 0)
+            {
+                return;
+            }
 
             active = true;
             this.value = value;

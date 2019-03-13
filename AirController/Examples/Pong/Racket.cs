@@ -19,18 +19,7 @@ namespace SwordGC.AirController.Examples.Pong
 
         private void Update()
         {
-            if (player.Input.GetKey("up"))
-            {
-                rb2d.velocity = Vector3.up * moveSpeed;
-            }
-            else if (player.Input.GetKey("down"))
-            {
-                rb2d.velocity = Vector3.down * moveSpeed;
-            }
-            else
-            {
-                rb2d.velocity = Vector3.zero;
-            }
+            rb2d.velocity = player.Input.GetVector("move") * moveSpeed;
         }
 
         void OnCollisionEnter2D(Collision2D col)

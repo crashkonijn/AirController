@@ -42,3 +42,5 @@ sysinfo.txt
 !/.gitignore
 
 !/WebGLTemplates/AirConsole/AirController/*
+
+.idea/

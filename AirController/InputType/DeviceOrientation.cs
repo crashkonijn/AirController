@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
 {
@@ -22,27 +19,33 @@ namespace SwordGC.AirController.InputTypes
         {
             get
             {
-                return new Vector3(Beta, Alpha, Gamma);
+                return new Vector3(Beta, Alpha, Gamma) * -1;
             }
         }
 
         public void HandleData(JSONObject data)
         {
             if (data.keys.Contains("alpha"))
+            {
                 Alpha = data["alpha"].f;
+            }
 
             if (data.keys.Contains("beta"))
+            {
                 Beta = data["beta"].f;
+            }
 
             if (data.keys.Contains("gamma"))
+            {
                 Gamma = data["gamma"].f;
+            }
 
             DetectState();
         }
 
         public void Update()
         {
-            
+
         }
 
         private void DetectState()

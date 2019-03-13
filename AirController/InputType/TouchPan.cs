@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
@@ -47,11 +45,11 @@ namespace SwordGC.AirController.InputTypes
             }
         }
 
-        public void HandleData (JSONObject data)
+        public void HandleData(JSONObject data)
         {
             if (data["value"].HasField("vector"))
             {
-                Vector2 v = Input.VectorFromJSON(data["value"]["vector"]);
+                Vector2 v = Input.VectorFromJSON(data["value"]["vector"]) * data["value"]["length"].f;
 
                 if (!IsTouching)
                 {
@@ -68,7 +66,7 @@ namespace SwordGC.AirController.InputTypes
             }
         }
 
-        public void Update ()
+        public void Update()
         {
             prevActive = active;
         }
@@ -76,29 +74,29 @@ namespace SwordGC.AirController.InputTypes
         /// <summary>
         /// Calls the input action when IsTouchStart
         /// </summary>
-        public void TouchStart (Action<Vector2> callback)
+        public void TouchStart(Action<Vector2> callback)
         {
             if (IsTouchStart)
             {
                 callback(StartPosition);
             }
         }
-        
+
         /// <summary>
         /// Calls the input action when IsTouching
         /// </summary>
-        public void Touching (Action<Vector2, Vector2> callback)
+        public void Touching(Action<Vector2, Vector2> callback)
         {
             if (IsTouching)
             {
                 callback(StartPosition, CurrentPosition);
             }
         }
-        
+
         /// <summary>
         /// Calls the input action when IsTouchEnd
         /// </summary>
-        public void TouchEnd (Action<Vector2, Vector2> callback)
+        public void TouchEnd(Action<Vector2, Vector2> callback)
         {
             if (IsTouchEnd)
             {
