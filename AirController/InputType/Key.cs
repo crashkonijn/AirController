@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 
 namespace SwordGC.AirController.InputTypes
 {
@@ -26,6 +28,12 @@ namespace SwordGC.AirController.InputTypes
                 if (data["event"].str == "down")
                 {
                     OnDown(int.Parse(data["value"].str != null ? data["value"].str : "0"), TYPE.HOLD);
+                    return;
+                }
+
+                if (!prevActive)
+                {
+                    AirController.Instance.StartCoroutine(Tap(int.Parse(data["value"].str != null ? data["value"].str : "0"), TYPE.HOLD));
                     return;
                 }
 
@@ -66,5 +74,13 @@ namespace SwordGC.AirController.InputTypes
             active = false;
         }
 
+        private IEnumerator Tap(int value, TYPE type)
+        {
+            OnDown(value, type);
+
+            yield return new WaitForEndOfFrame();
+
+            OnUp();
+        }
     }
 }
