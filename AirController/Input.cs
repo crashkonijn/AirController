@@ -53,7 +53,7 @@ namespace SwordGC.AirController
                 if (type == "tap-button" || type == "hold-button")
                 {
                     GetKeyObject(key).HandleData(j);
-                    return;
+                    continue;
                 }
 
                 if (type == "vector")
@@ -63,30 +63,30 @@ namespace SwordGC.AirController
                     if (!Axis.ContainsKey(lKey))
                     {
                         Axis.Add(lKey, VectorFromJSON(j["value"]));
-                        return;
+                        continue;
                     }
 
                     Axis[lKey] = VectorFromJSON(j["value"]);
-                    return;
+                    continue;
                 }
 
                 if (type == "gyro")
                 {
                     Orientation.HandleData(j["value"]);
                     Motion.HandleData(j["value"]);
-                    return;
+                    continue;
                 }
 
                 if (type == "swipe")
                 {
                     Swipe.HandleData(j);
-                    return;
+                    continue;
                 }
 
                 if (type == "pan")
                 {
                     Pan.HandleData(j);
-                    return;
+                    continue;
                 }
             }
         }

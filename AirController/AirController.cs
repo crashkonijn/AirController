@@ -144,6 +144,7 @@ namespace SwordGC.AirController
         #region AIRCONSOLE_CALLBACKS
         protected virtual void OnReady(string code)
         {
+            InternalDebug("OnReady: " + code);
             IsReady = true;
             Code = code;
         }
