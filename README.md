@@ -131,5 +131,5 @@ MaxPlayersMode: Auto
 ![Same number of players and devices](https://i.imgur.com/LvM12Lm.png)
 
 ## Docs
-A more in depth explanation of everything can be found in the [wiki](https://github.com/crashkonijn/AirController/wiki/AirController-(Unity))
+A more in depth explanation of everything can be found in the [wiki](https://github.com/crashkonijn/AirController/wiki))
 
