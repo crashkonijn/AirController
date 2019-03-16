@@ -40,7 +40,8 @@ Unity:
 
 These games are powered by AirController:
 
-[Basher Beatdown](https://www.airconsole.com/play/multiplayer-games/basher-beatdown
+[Basher Beatdown](https://www.airconsole.com/play/multiplayer-games/basher-beatdown)
+
 [The Underground King](https://www.airconsole.com/play/the-underground-king)
 
 # Usage
