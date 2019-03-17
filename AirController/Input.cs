@@ -114,12 +114,22 @@ namespace SwordGC.AirController
             return GetKeyObject(key).active;
         }
 
+        public bool GetButton(string key)
+        {
+            return GetKey(key);
+        }
+
         /// <summary>
         /// Returns true if the button was pressed down this frame
         /// </summary>
         public bool GetKeyDown(string key)
         {
             return GetKeyObject(key).active && !GetKeyObject(key).prevActive;
+        }
+
+        public bool GetButtonDown(string key)
+        {
+            return GetKeyDown(key);
         }
 
         /// <summary>
@@ -130,12 +140,22 @@ namespace SwordGC.AirController
             return GetKeyObject(key).type == Key.TYPE.HOLD ? !GetKeyObject(key).active && GetKeyObject(key).prevActive : false;
         }
 
+        public bool GetButtonUp(string key)
+        {
+            return GetKeyUp(key);
+        }
+
         /// <summary>
         /// Returns the value of a given key
         /// </summary>
         public int GetKeyValue(string key)
         {
             return GetKeyObject(key).value;
+        }
+
+        public int GetButtonValue(string key)
+        {
+            return GetButtonValue(key);
         }
 
         /// <summary>
