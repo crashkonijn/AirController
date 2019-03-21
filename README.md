@@ -1,5 +1,5 @@
 <h1 align="center">AirController</h1>
-<h5 align="center">A plug 'n play Unity plugin that makes [AirConsole](https://www.airconsole.com/) development a breeze.</h5>
+<h5 align="center">A plug 'n play Unity plugin that makes <a href="https://www.airconsole.com">AirConsole</a> development a breeze.</h5>
 
 <p align="center">
     <a href="https://github.com/crashkonijn/AirController/wiki">
@@ -10,7 +10,7 @@
     </a> -  
     <a href="https://github.com/crashkonijn/air-controller-vue-example">
     	Controller example project
-    </a>  -  
+    </a> -  
     <a href="https://www.youtube.com/watch?v=Xy91WrbHkFs">
     	Video tutorial
     </a> 
