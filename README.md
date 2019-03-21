@@ -1,6 +1,22 @@
-# AirController
+<h1 align="center">AirController</h1>
+<h5 align="center">A plug 'n play Unity plugin that makes [AirConsole](https://www.airconsole.com/) development a breeze.</h5>
 
-A plug 'n play unity plugin for [AirConsole](https://www.airconsole.com/) for easier development.
+<p align="center">
+    <a href="https://github.com/crashkonijn/AirController/wiki">
+	Wiki
+    </a> - 
+    <a href="https://github.com/crashkonijn/air-controller-vue">
+    	Controller source
+    </a> -  
+    <a href="https://github.com/crashkonijn/air-controller-vue-example">
+    	Controller example project
+    </a>  -  
+    <a href="https://www.youtube.com/watch?v=Xy91WrbHkFs">
+    	Video tutorial
+    </a> 
+</p>
+
+<hr>
 
 An earlier version of this library was used to handle all AirConsole related things when developing our game [Basher Beatdown for AirConsole](https://www.airconsole.com/play/multiplayer-games/basher-beatdown). This version has been cleaned up and extended upon, to make it useful to a much wider range of games.
 
