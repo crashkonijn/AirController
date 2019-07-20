@@ -17,6 +17,8 @@ namespace SwordGC.AirController.InputTypes
 
         public void HandleData(JSONObject data)
         {
+            // data["position"] has the info
+
             if (data["type"].str == "tap-button")
             {
                 OnDown(int.Parse(data["value"].str != null ? data["value"].str : "0"), TYPE.TAP);

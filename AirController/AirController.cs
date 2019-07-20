@@ -151,6 +151,14 @@ namespace SwordGC.AirController
 
         protected virtual void OnMessage(int from, JToken data)
         {
+            JSONObject json = new JSONObject(data.ToString());
+
+            if (json.keys.Contains("init"))
+            {
+                GetDevice(from).Init(json["init"]);
+                return;
+            }
+
             GetDevice(from).Input.Process(data);
 
             if (joinMode == JOINMODE.CUSTOM)
@@ -565,7 +573,7 @@ namespace SwordGC.AirController
             }
 
             JSONObject j = new JSONObject(JSONObject.Type.OBJECT);
-
+            
             foreach (int i in Devices.Keys)
             {
                 j.AddField(i.ToString(), Devices[i].GetJson());

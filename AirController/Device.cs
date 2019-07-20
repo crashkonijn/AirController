@@ -1,7 +1,9 @@
 ﻿using NDream.AirConsole;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace SwordGC.AirController
 {
@@ -145,6 +147,11 @@ namespace SwordGC.AirController
         /// </summary>
         public Texture2D ProfilePicture { get; private set; }
 
+        /// <summary>
+        /// Holds the device screen resolution
+        /// </summary>
+        public Vector2 Screen { get; private set; }
+
         public Device(int deviceId)
         {
             airController = AirController.Instance;
@@ -199,16 +206,53 @@ namespace SwordGC.AirController
             customData.Add(key, data);
         }
 
+        internal void Init(JSONObject json)
+        {
+            this.Screen = new Vector2(json["width"].f, json["height"].f);
+        }
+
+        /// <summary>
+        /// Sends a message to this device
+        /// </summary>
+        /// <param name="jSON"></param>
+        public void SendMessage(JSONObject jSON)
+        {
+            AirConsole.instance.Message(DeviceId, jSON.Print());
+        }
+
+        /// <summary>
+        /// Vibrates on the device.
+        /// </summary>
+        /// <param name="time">Milliseconds to vibrate the device</param>
+        public void Vibrate(int time = 200)
+        {
+            JSONObject data = new JSONObject(JSONObject.Type.OBJECT);
+
+            data.AddField("vibrate", time);
+
+            SendMessage(data);
+        }
+
         /// <summary>
         /// Loads the profile picture of this device
         /// </summary>
         private IEnumerator LoadProfilePicture()
         {
             string url = AirConsole.instance.GetProfilePicture(DeviceId, 512);
-            ProfilePicture = new Texture2D(4, 4, TextureFormat.DXT1, false);
-            WWW www = new WWW(url);
-            yield return www;
-            www.LoadImageIntoTexture(ProfilePicture);
+
+            using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+            {
+                yield return request.SendWebRequest();
+                
+                if (request.isNetworkError)
+                {
+                    Debug.LogError(request.error);
+                }
+                else
+                {
+                    ProfilePicture = DownloadHandlerTexture.GetContent(request);
+                }
+            }
         }
     }
 }
